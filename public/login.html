@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HWOS Admin Login</title>
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+  <main class="admin-shell login-shell">
+    <header class="admin-header">
+      <div>
+        <p class="eyebrow">Restricted Access</p>
+        <h1>HWOS Admin Login</h1>
+        <p>Sign in to access the administrative alert console.</p>
+      </div>
+    </header>
+
+    <section class="panel">
+      <form method="post" action="/admin/login" class="admin-form">
+        <label>Username
+          <input name="username" autocomplete="username" required autofocus />
+        </label>
+        <label>Password
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <button type="submit">Sign in</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

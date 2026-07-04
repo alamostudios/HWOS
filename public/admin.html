@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FCDR HWOS Admin</title>
+  <link rel="icon" type="image/png" href="/tablogo.png" />
+  <link rel="stylesheet" href="/admin.css" />
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <div class="eyebrow">Fulton County Disaster Response</div>
+        <h1>HWOS Alert Test Console</h1>
+        <p>Send local, browser-delivered test alerts to every open HWOS client.</p>
+      </div>
+      <a class="main-link" href="/">Open Main Display</a>
+    </header>
+
+    <section class="notice">
+      This page broadcasts simulated messages only. It does not create or modify NWS alerts.
+    </section>
+
+    <section class="grid">
+      <form id="alertForm" class="panel">
+        <h2>Send Alert</h2>
+
+        <label>Message category
+          <select id="messageCategory">
+            <option value="weather">Weather/Test Alert</option>
+            <option value="admin">Administrative Message</option>
+          </select>
+        </label>
+
+        <label>Preset alert type
+          <select id="alertType"></select>
+        </label>
+
+        <div id="adminMessageOptions" class="admin-message-options" hidden>
+          <label>Administrative severity
+            <select id="adminSeverity">
+              <option value="green" selected>Green — informational</option>
+              <option value="red">Red — urgent</option>
+            </select>
+          </label>
+          <label>Persist until
+            <input id="adminExpires" type="datetime-local" />
+          </label>
+        </div>
+
+        <label>Headline
+          <input id="headline" value="FCDR HWOS test alert" maxlength="240" />
+        </label>
+
+        <label>Custom message
+          <textarea id="message" rows="5">This is a test message from the FCDR HWOS administrative console.</textarea>
+        </label>
+
+        <label>Target TV area
+          <input id="targetRegion" placeholder="all, spotter, or the same value used in /tv.html/region" value="all" maxlength="120" />
+          <small class="field-help">Use <strong>all</strong> for every display, <strong>spotter</strong> for spotter mode, or any region string that TV mode can resolve.</small>
+        </label>
+
+        <div class="two-col">
+          <label>Severity
+            <select id="severity">
+              <option>Extreme</option>
+              <option selected>Severe</option>
+              <option>Moderate</option>
+              <option>Minor</option>
+              <option>Unknown</option>
+            </select>
+          </label>
+          <label>Urgency
+            <select id="urgency">
+              <option selected>Immediate</option>
+              <option>Expected</option>
+              <option>Future</option>
+              <option>Past</option>
+              <option>Unknown</option>
+            </select>
+          </label>
+        </div>
+
+        <label>Alert sound
+          <select id="soundKey">
+            <option value="auto">Automatic by alert type</option>
+            <option value="tornado">Tornado / siren tone</option>
+            <option value="warning">Warning tone</option>
+            <option value="watch">Watch tone</option>
+            <option value="advisory">Advisory tone</option>
+            <option value="statement">Statement tone</option>
+            <option value="silent">Silent</option>
+          </select>
+        </label>
+
+        <div class="actions">
+          <button type="button" id="previewSound">Preview Sound</button>
+          <button type="submit" class="send">Broadcast Message</button>
+        </div>
+      </form>
+
+      <section class="panel">
+        <h2>Quick Tests</h2>
+        <div id="quickButtons" class="quick-buttons"></div>
+      </section>
+    </section>
+
+    <section id="result" class="result">Ready.</section>
+    <section class="panel current-admin-panel">
+      <h2>Current Administrative Message</h2>
+      <div id="currentAdminMessage" class="current-admin-message muted-box">No active administrative message.</div>
+      <div class="admin-expire-controls">
+        <label>Change expiration
+          <input id="currentAdminExpires" type="datetime-local" />
+        </label>
+        <div class="actions compact-actions">
+          <button type="button" id="updateAdminExpiration">Update Expiration</button>
+          <button type="button" id="expireAdminNow" class="danger-btn">Expire Now</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

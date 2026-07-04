@@ -1,0 +1,21 @@
+{
+  "name": "weatherfront-free",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "hash-password": "node -e \"const crypto=require('node:crypto'); const p=process.argv[1]; if(!p){console.error('Usage: npm run hash-password -- your-password'); process.exit(1)} const salt=crypto.randomBytes(16).toString('hex'); const hash=crypto.scryptSync(p,salt,64).toString('hex'); console.log('scrypt:'+salt+':'+hash)\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "node-cache": "^5.1.2"
+  }
+}

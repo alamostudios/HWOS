@@ -1,0 +1,24 @@
+[
+  {
+    "type": "Feature",
+    "geometry": null,
+    "properties": {
+      "id": "admin-message-1783117765001-84u1fna02de",
+      "event": "Administrative Message",
+      "headline": "FCDR HWOS test alert",
+      "description": "This is a test message from the FCDR HWOS administrative console.",
+      "severity": "Minor",
+      "urgency": "Expected",
+      "soundKey": "admin-green",
+      "targetRegion": "chicago",
+      "targetRegionKey": "chicago",
+      "sent": "2026-07-03T22:29:25.001Z",
+      "effective": "2026-07-03T22:29:25.001Z",
+      "expires": "2026-07-03T23:29:00.000Z",
+      "source": "FCDR HWOS Admin Console",
+      "test": true,
+      "adminMessage": true,
+      "adminSeverity": "green"
+    }
+  }
+]
