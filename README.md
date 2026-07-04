@@ -14,14 +14,11 @@ npm run dev
 Open:
 
 ```text
-http://localhost
+http://localhost:5000
 ```
 
-Default port is now `80`. On Windows, run the terminal as Administrator if binding to port 80 is denied. To override it temporarily:
+Default port is now `5000`.
 
-```cmd
-set PORT=3001 && npm run dev
-```
 
 ## Included features
 
