@@ -13,6 +13,43 @@
   --statement: #0369a1;
   --shadow: 0 12px 28px rgba(17, 24, 39, .16);
 }
+
+/* Bootstrap integration layer: keep Bootstrap as the framework, HWOS only supplies product colors/layout positions. */
+:root {
+  --bs-primary: #2563eb;
+  --bs-primary-rgb: 37, 99, 235;
+  --bs-warning: #f59e0b;
+  --bs-danger: #dc2626;
+  --bs-success: #16a34a;
+  --bs-border-radius: .625rem;
+  --hwos-gap: 1rem;
+  --hwos-pad: .875rem;
+}
+.btn-primary,
+.primary-btn {
+  --bs-btn-bg: #2563eb;
+  --bs-btn-border-color: #1d4ed8;
+  --bs-btn-hover-bg: #1d4ed8;
+  --bs-btn-hover-border-color: #1e40af;
+  --bs-btn-color: #fff;
+  color: #fff !important;
+}
+.btn-outline-secondary,
+.secondary-btn {
+  --bs-btn-color: #111827;
+  --bs-btn-border-color: #cfd6de;
+  --bs-btn-bg: #fff;
+  --bs-btn-hover-bg: #f3f4f6;
+  --bs-btn-hover-color: #111827;
+}
+.card.topbar,
+.card.left-console,
+.card.info-panel,
+.card.settings-drawer,
+.card.admin-message-banner {
+  border-radius: var(--bs-border-radius);
+  border-color: var(--bs-border-color-translucent);
+}
 * { box-sizing: border-box; }
 html, body, #app, #map { height: 100%; margin: 0; }
 body {
@@ -38,10 +75,10 @@ body {
   min-height: 90px;
   display: grid;
   grid-template-columns: 190px minmax(420px, 1fr) minmax(360px, 520px) 52px;
-  gap: 14px;
+  gap: var(--hwos-gap);
   align-items: center;
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: var(--hwos-pad) 1rem;
+  border-radius: var(--bs-border-radius);
   background: rgba(255,255,255,.98);
 }
 .logo-slot {
@@ -77,7 +114,7 @@ h1 {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 11px 12px;
+  padding: var(--hwos-pad);
   font: inherit;
 }
 .primary-btn, .secondary-btn, .icon-btn, .layer-btn, .tab-btn, .radar-playback button {
@@ -85,7 +122,7 @@ h1 {
   background: var(--accent);
   color: #111827;
   border-radius: 8px;
-  padding: 9px 10px;
+  padding: .55rem .75rem;
   font-weight: 900;
   cursor: pointer;
   font: inherit;
@@ -100,9 +137,9 @@ h1 {
   width: 252px;
   max-height: calc(100% - 184px);
   overflow: auto;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
 }
-.console-section { padding: 11px 12px; border-bottom: 1px solid var(--line); }
+.console-section { padding: var(--hwos-pad); border-bottom: 1px solid var(--line); }
 .console-section:last-child { border-bottom: 0; }
 .section-title {
   font-size: 12px;
@@ -115,7 +152,7 @@ h1 {
 .layer-btn {
   width: 100%;
   text-align: left;
-  margin: 5px 0;
+  margin: .35rem 0;
   background: #fff;
   border-color: var(--line);
   color: var(--text);
@@ -133,9 +170,9 @@ h1 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
 }
-.panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+.panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: var(--hwos-pad); border-bottom: 1px solid var(--line); }
 .status { margin: 10px 12px; padding: 9px; border-left: 5px solid var(--accent); background: #f7f8fa; border-radius: 8px; color: var(--muted); font-size: 13px; }
 .mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; padding: 0 12px 11px; }
 .metric { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fff; }
@@ -162,7 +199,7 @@ h1 {
   left: 14px;
   bottom: 28px;
   width: 252px;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
   padding: 12px;
   background: rgba(17,24,39,.92);
   color: #fff;
@@ -179,8 +216,8 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 10px;
-  border-radius: 10px;
+  padding: .55rem .75rem;
+  border-radius: var(--bs-border-radius);
   background: rgba(255,255,255,.96);
 }
 .radar-playback button { min-width: 42px; padding: 8px 10px; }
@@ -208,7 +245,7 @@ h1 {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px 12px;
   align-items: start;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
   padding: 9px 12px 11px;
   background: rgba(255,255,255,.94);
   border: 1px solid var(--line);
@@ -277,7 +314,7 @@ h1 {
   max-height: calc(100% - 140px);
   overflow: auto;
   padding: 16px;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
   transform: translateX(390px);
   transition: transform .18s ease;
 }
@@ -706,7 +743,7 @@ h1 {
   display: block;
   width: 100%;
   text-align: center;
-  padding: 9px 10px;
+  padding: .55rem .75rem;
   border: 1px solid var(--accent);
   border-radius: 8px;
   background: color-mix(in srgb, var(--accent) 8%, transparent);
@@ -819,7 +856,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .popup-action:f
     order: 3;
     z-index: auto;
   }
-  .admin-message-banner { border-radius: 10px; }
+  .admin-message-banner { border-radius: var(--bs-border-radius); }
 }
 @media (max-width: 560px) {
   .admin-message-banner { padding: 9px 10px 11px; grid-template-columns: minmax(0,1fr); }
@@ -827,218 +864,25 @@ button:focus-visible, input:focus-visible, select:focus-visible, .popup-action:f
   .admin-message-issued { text-align:left; margin-left:0; }
 }
 
-/* 2026-07-03 Bootstrap layout restoration / responsive module spacing */
-:root {
-  --hwos-header-clearance: 128px;
-  --hwos-panel-gap: 16px;
-  --hwos-panel-pad: 14px;
-  --border: var(--line);
-  --panel-bg: var(--panel-solid);
+.discord-settings {
+  border-top: 1px solid var(--border, rgba(127,127,127,.25));
+  margin-top: 14px;
+  padding-top: 14px;
 }
-.topbar,
-.left-console,
-.info-panel,
-.settings-drawer,
-.radar-legend,
-.radar-playback,
-.admin-message-banner,
-.content-box,
-.card,
-.metric {
-  border-radius: .75rem;
+.settings-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0;
 }
-.topbar {
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  gap: 1rem;
-  padding: 14px 16px;
-}
-.left-console,
-.info-panel,
-.settings-drawer {
-  top: calc(var(--hwos-header-clearance) + 16px);
-  max-height: calc(100% - var(--hwos-header-clearance) - 72px);
-}
-.left-console { left: 16px; }
-.info-panel, .settings-drawer { right: 16px; }
-.console-section,
-.panel-header,
-.content-box,
-.card,
-.metric {
-  padding: var(--hwos-panel-pad);
-}
-.content-box,
-.card {
-  margin: 10px 14px;
-}
-.info-panel .scroll-stack,
-.tab-content.active {
-  min-height: 0;
-}
-@media (min-width: 1500px) {
-  .left-console { width: 280px; }
-  .info-panel { width: 380px; }
-  .toast-stack { right: 412px; }
-  .admin-message-stack { left: 320px; right: 430px; }
-}
-@media (max-width: 1450px) {
-  .topbar { grid-template-columns: 150px minmax(270px,1fr) minmax(300px,420px) 48px; }
-  .left-console { width: 240px; }
-  .info-panel { width: 330px; }
-}
-@media (max-width: 1240px), (max-height: 760px) {
-  .topbar { min-height: 78px; grid-template-columns: 125px minmax(220px,1fr) minmax(260px,360px) 44px; padding: 10px 12px; }
-  .logo-slot { height: 54px; width: 132px; }
-  .left-console,
-  .info-panel,
-  .settings-drawer { top: 112px; max-height: calc(100% - 158px); }
-  .subline { display: none; }
-  .console-section { padding: 10px 11px; }
-  .content-box, .card { margin: 8px 12px; padding: 11px; }
-}
-@media (max-width: 1080px) and (min-width: 981px) {
-  .topbar { grid-template-columns: 105px 1fr 300px 44px; }
-  .title-block .eyebrow { font-size: 11px; }
-  h1 { font-size: 20px; }
-  .left-console { width: 220px; }
-  .info-panel { width: 300px; }
-}
-
-/* Main alert popup: fixed header/footer, real scroll body, visible buttons */
-.alert-detail-popup .leaflet-popup-content-wrapper {
-  padding: 0 !important;
-  overflow: hidden !important;
-}
-.alert-detail-popup .leaflet-popup-content {
-  width: min(430px, calc(100vw - 56px)) !important;
-  max-height: min(72vh, 620px) !important;
-  overflow: hidden !important;
-}
-.alert-popup-card {
-  max-height: min(72vh, 620px) !important;
-  display: grid !important;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  overflow: hidden !important;
-  background: var(--panel-solid);
-}
-.alert-popup-head {
-  grid-row: 1;
-  padding: 12px 14px 10px !important;
-}
-.popup-scroll-body {
-  grid-row: 2;
-  overflow-y: auto !important;
-  min-height: 0;
-  padding-bottom: 8px;
-  -webkit-overflow-scrolling: touch;
-}
-.popup-footer {
-  grid-row: 3;
-  position: sticky;
-  bottom: 0;
-  z-index: 5;
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  padding: 12px 14px 14px !important;
-  background: var(--panel-solid);
-  border-top: 1px solid var(--line);
-}
-.popup-footer .popup-action {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 10px 12px !important;
+.discord-settings input[type="password"],
+.discord-settings input[type="text"],
+.discord-settings input:not([type]) {
   width: 100%;
-  border-color: #2563eb !important;
-  background: #2563eb !important;
-  color: #fff !important;
-  text-decoration: none;
-  border-radius: 9px;
-}
-.popup-footer .popup-action:only-child { grid-column: 1 / -1; }
-.alert-popup-image,
-.alert-image,
-.popup-alert-image,
-.alert-popup-card img {
-  box-shadow: none !important;
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0 !important;
-  max-width: 100%;
-  height: auto;
-}
-@media (max-width: 700px) {
-  .alert-detail-popup .leaflet-popup-content { width: min(350px, calc(100vw - 36px)) !important; }
-  .alert-popup-card { max-height: min(66vh, 560px) !important; }
 }
 
 
-/* Stable header logo behavior: wide logo on desktop, tab logo on zoomed/narrow layouts. */
-.logo-slot picture { width:100%; height:100%; display:block; }
-.logo-slot img { width:100%; height:100%; object-fit:contain; object-position:left center; }
-@media (max-width: 900px) {
-  .logo-slot { width:72px !important; min-width:72px; }
-}
-
-/* Reflectivity dBZ aligned exactly to the Radar Products module edges, with balanced vertical padding. */
-.left-console .console-section + .dbz-console-section { margin-top: 0; }
-.left-console .dbz-console-section {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 14px;
-}
-.dbz-console-section .spectrum { margin-top: 8px; }
-.dbz-console-section .legend-values,
-.dbz-console-section .legend-scale { padding-inline: 0; }
-
-/* Warning image lives only as a direct child at the top of each alert popup card. */
-.alert-popup-card > .alert-popup-warning-image {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-.alert-popup-card .popup-scroll-body .alert-popup-warning-image,
-.alert-popup-head .alert-popup-warning-image,
-.alert-rows .alert-popup-warning-image,
-.popup-text .alert-popup-warning-image,
-.popup-instruction .alert-popup-warning-image {
-  display: none !important;
-}
-
-/* Current conditions should stay readable even when station fallback text is longer. */
-#currentConditions { min-height: 0; }
-.current-main { line-height: 1.05; }
-
-
-/* Prod parity: dBZ is its own module directly under Radar Products, aligned to the same left/right edges. */
-.left-console .dbz-console-section {
-  width: 100%;
-  box-sizing: border-box;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
-  padding-left: 12px !important;
-  padding-right: 12px !important;
-  margin: 0;
-  background: rgba(17,24,39,.92);
-  color: #fff;
-}
-.left-console .dbz-console-section .legend-title { color: #fff; margin-bottom: 8px; }
-.left-console .dbz-console-section .spectrum { width: 100%; }
-.left-console .dbz-console-section .legend-values,
-.left-console .dbz-console-section .legend-scale { color: #e5e7eb; width: 100%; padding: 0; }
-
-/* Prod parity: per-alert images are inside the alert popup card content and long NWS text is truncated. */
-.alert-popup-warning-image { display: none !important; }
+/* Alert image + multi-alert popup UI */
 .alert-popup-card .popup-plainline {
   margin: 0.6rem 0 0;
   color: var(--muted, #475569);
@@ -1120,7 +964,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .popup-action:f
   overflow-y: auto !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
 }
 .alert-popup-card .alert-popup-head {
   padding: 12px 14px 10px !important;
@@ -1241,7 +1085,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, .popup-action:f
   overflow-x: hidden !important;
   padding: 10px !important;
   box-sizing: border-box !important;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius);
 }
 .alert-detail-title {
   display: grid;
@@ -1345,567 +1189,512 @@ button:focus-visible, input:focus-visible, select:focus-visible, .popup-action:f
   .alert-detail-scroll .alert-popup-image { max-height: 110px !important; }
 }
 
-.alert-card[data-open-alert-id] { cursor: pointer; }
-.alert-card[data-open-alert-id]:focus { outline: 3px solid rgba(204,255,0,.65); outline-offset: 2px; }
 
-
-/* 2026-07-03 prod visual parity: Radar Products and dBZ are fixed Bootstrap-card modules; only lower controls scroll. */
-.left-console {
-  overflow: visible !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 10px !important;
-  max-height: calc(100% - 184px) !important;
-  background: transparent !important;
-  border-radius: 0 !important;
+/* Bootstrap spacing reconciliation */
+.left-console .btn,
+.panel-tabs .btn,
+.radar-playback .btn,
+.primary-btn,
+.secondary-btn,
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.15;
+}
+.layer-btn.btn,
+.tab-btn.btn {
+  width: 100%;
+  justify-content: flex-start;
+}
+.tab-btn.btn {
+  justify-content: center;
+}
+.toggle-row,
+.settings-field {
+  gap: .5rem;
+}
+.info-panel .card-body,
+.left-console .card-body {
+  padding: var(--hwos-pad);
+}
+.alert-card,
+.metric,
+.content-box,
+.admin-message-banner,
+.hwos-alert-popup {
+  border-radius: var(--bs-border-radius);
 }
-.left-console > .console-section,
-.left-console > .left-console-scroll {
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-.left-console > .console-section {
-  background: rgba(255,255,255,.94) !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 10px !important;
-  overflow: hidden !important;
-}
-.left-console > .dbz-console-section {
-  flex: 0 0 auto !important;
-  margin: 0 !important;
-  padding: 14px 12px !important;
-  background: rgba(17,24,39,.94) !important;
-  color: #fff !important;
-}
-.left-console > .radar-products-module {
-  flex: 0 0 auto !important;
-  margin: 0 !important;
-}
-.left-console-scroll {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  background: rgba(255,255,255,.94) !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 10px !important;
-}
-.left-console-scroll .console-section {
-  background: transparent !important;
-}
-.left-console > .dbz-console-section .legend-title { color:#fff !important; }
-.left-console > .dbz-console-section .legend-values,
-.left-console > .dbz-console-section .legend-scale { color:#e5e7eb !important; }
-@media (max-width: 860px) {
-  .left-console { display: grid !important; overflow: visible !important; max-height: none !important; }
-  .left-console-scroll { overflow: visible !important; }
-}
-
-/* Alert popup images: use per-alert-type images, displayed once at top of the detail card. */
-.alert-popup-card .alert-popup-image {
-  display: block !important;
-  width: 100% !important;
-  max-height: 150px !important;
-  object-fit: contain !important;
-  margin: 0 0 8px !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.alert-detail-scroll .alert-popup-image { margin: 0 0 8px !important; }
-
-
-/* 2026-07-03 correction: left console is one Bootstrap-style module; dBZ sits at its bottom, not as a separate card. */
-.left-console {
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  display: block !important;
-  gap: 0 !important;
-  max-height: calc(100% - 184px) !important;
-  background: rgba(255,255,255,.94) !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 10px !important;
-  box-shadow: var(--shadow) !important;
-}
-.left-console-scroll { display: contents !important; }
-.left-console > .console-section,
-.left-console .left-console-scroll > .console-section {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin: 0 !important;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  border-bottom: 1px solid var(--line) !important;
-  overflow: visible !important;
-}
-.left-console > .console-section:last-child { border-bottom: 0 !important; }
-.left-console > .dbz-console-section {
-  padding: 14px 12px !important;
-  background: rgba(17,24,39,.98) !important;
-  color: #fff !important;
-  border-bottom: 0 !important;
-}
-.left-console > .dbz-console-section .legend-title { color:#fff !important; margin-bottom:8px !important; }
-.left-console > .dbz-console-section .spectrum { width:100% !important; }
-.left-console > .dbz-console-section .legend-values,
-.left-console > .dbz-console-section .legend-scale { color:#e5e7eb !important; width:100% !important; padding:0 !important; }
-@media (max-width: 860px) {
-  .left-console { display:grid !important; overflow:visible !important; max-height:none !important; }
-}
-
-/* v4: final radar-products/dbZ structure. Radar products is one Bootstrap card; dBZ is a separate non-scrolling card under it. */
-.left-console {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 10px !important;
-  overflow: visible !important;
-  max-height: calc(100vh - 160px) !important;
-}
-.left-console > .radar-products-module.card,
-.left-console > .dbz-module.card {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  margin: 0 !important;
-  border-radius: 10px !important;
-  box-shadow: var(--shadow) !important;
-}
-.left-console > .radar-products-module.card {
-  flex: 0 1 auto !important;
-  overflow: visible !important;
-  padding: 14px 12px !important;
-  background: rgba(255,255,255,.94) !important;
-  border: 1px solid var(--line) !important;
-}
-.left-console > .radar-products-module.card .sub-section-title {
-  margin-top: 16px !important;
-  padding-top: 14px !important;
-  border-top: 1px solid var(--line) !important;
-}
-.left-console > .dbz-module.card {
-  flex: 0 0 auto !important;
-  overflow: hidden !important;
-  padding: clamp(8px, 1.15vh, 14px) clamp(9px, 1vw, 12px) !important;
-  background: rgba(17,24,39,.98) !important;
-  color: #fff !important;
-  border: 1px solid rgba(15,23,42,.72) !important;
-}
-.left-console > .dbz-module.card .legend-title {
-  color: #fff !important;
-  margin: 0 0 clamp(5px, .75vh, 8px) !important;
-  font-size: clamp(10px, .8vw, 13px) !important;
-}
-.left-console > .dbz-module.card .spectrum {
-  width: 100% !important;
-  height: clamp(10px, 1.6vh, 18px) !important;
-  margin: 0 !important;
-}
-.left-console > .dbz-module.card .legend-values,
-.left-console > .dbz-module.card .legend-scale {
-  width: 100% !important;
-  color: #e5e7eb !important;
-  padding: 0 !important;
-  margin-top: clamp(3px, .65vh, 7px) !important;
-  font-size: clamp(7px, .62vw, 9px) !important;
-  line-height: 1.05 !important;
-}
-
-/* v4: alert type images sit flush against the popup edges with zero left/right padding. */
-.alert-detail-popup .leaflet-popup-content-wrapper,
-.alert-detail-popup .leaflet-popup-content { overflow: hidden !important; }
-.alert-popup-card {
-  padding: 0 !important;
-  display: grid !important;
-  grid-template-rows: auto minmax(0,1fr) !important;
-  overflow: hidden !important;
-}
-.alert-popup-card > .alert-popup-image {
-  grid-row: 1 !important;
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  height: auto !important;
-  max-height: 170px !important;
-  object-fit: cover !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-.alert-popup-card > .popup-scroll-body {
-  grid-row: 2 !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  padding: 10px !important;
-}
-.alert-popup-card .popup-scroll-body .alert-popup-image { display: none !important; }
-
-@media (max-height: 760px) {
-  .left-console { gap: 8px !important; }
-  .left-console > .radar-products-module.card { padding-top: 10px !important; padding-bottom: 10px !important; }
-  .left-console > .radar-products-module.card .sub-section-title { margin-top: 10px !important; padding-top: 10px !important; }
-  .toggle-row { margin: 5px 0 !important; }
-}
-
-
-/* v5: compact left modules, dBZ remains its own non-scrolling module and scales to fit the viewport. */
-.left-console {
-  width: clamp(214px, 13.2vw, 238px) !important;
-  top: 128px !important;
-  max-height: calc(100vh - 142px) !important;
-  gap: clamp(6px, .75vh, 9px) !important;
-}
-.left-console > .radar-products-module.card {
-  padding: clamp(7px, .72vh, 10px) clamp(9px, .72vw, 11px) !important;
-  font-size: clamp(10px, .72vw, 12px) !important;
-  line-height: 1.16 !important;
-}
-.left-console > .radar-products-module.card .section-title {
-  font-size: clamp(9px, .62vw, 11px) !important;
-  margin-bottom: clamp(4px, .48vh, 7px) !important;
-  letter-spacing: .115em !important;
-}
-.left-console > .radar-products-module.card .sub-section-title {
-  margin-top: clamp(7px, .85vh, 11px) !important;
-  padding-top: clamp(7px, .85vh, 10px) !important;
-}
-.left-console > .radar-products-module.card .layer-btn {
-  margin: clamp(3px, .38vh, 5px) 0 !important;
-  padding: clamp(7px, .7vh, 9px) 9px !important;
-  min-height: 0 !important;
-  font-size: clamp(10px, .72vw, 12px) !important;
-  line-height: 1.15 !important;
-}
-.left-console > .radar-products-module.card .toggle-row {
-  margin: clamp(2px, .34vh, 4px) 0 !important;
-  gap: 6px !important;
-  font-size: clamp(10px, .68vw, 12px) !important;
-  line-height: 1.14 !important;
-}
-.left-console > .radar-products-module.card input[type="checkbox"] {
-  width: 12px !important;
-  height: 12px !important;
-  flex: 0 0 12px !important;
-}
-.left-console > .dbz-module.card {
-  padding: clamp(7px, .75vh, 10px) clamp(8px, .72vw, 10px) !important;
-}
-.left-console > .dbz-module.card .legend-title {
-  font-size: clamp(9px, .64vw, 11px) !important;
-  margin-bottom: clamp(4px, .45vh, 6px) !important;
-}
-.left-console > .dbz-module.card .spectrum { height: clamp(8px, 1.1vh, 14px) !important; }
-.left-console > .dbz-module.card .legend-values,
-.left-console > .dbz-module.card .legend-scale {
-  font-size: clamp(6px, .52vw, 8px) !important;
-  margin-top: clamp(2px, .38vh, 4px) !important;
-  line-height: 1 !important;
-}
-@media (max-height: 760px) {
-  .left-console { top: 122px !important; max-height: calc(100vh - 132px) !important; width: 214px !important; gap: 5px !important; }
-  .left-console > .radar-products-module.card { padding: 6px 8px !important; }
-  .left-console > .radar-products-module.card .section-title { font-size: 9px !important; margin-bottom: 3px !important; }
-  .left-console > .radar-products-module.card .sub-section-title { margin-top: 6px !important; padding-top: 6px !important; }
-  .left-console > .radar-products-module.card .layer-btn { padding: 6px 8px !important; margin: 2px 0 !important; font-size: 10px !important; }
-  .left-console > .radar-products-module.card .toggle-row { margin: 1px 0 !important; font-size: 10px !important; }
-  .left-console > .dbz-module.card { padding: 6px 8px !important; }
-}
-
-
-/* v6: moderation pass. Keep Radar Products/dBZ compact enough to fit, but not as reduced as v5. */
-.left-console {
-  width: clamp(230px, 14.4vw, 248px) !important;
-  top: 128px !important;
-  max-height: calc(100vh - 142px) !important;
-  gap: clamp(8px, .9vh, 10px) !important;
-}
-.left-console > .radar-products-module.card {
-  padding: clamp(10px, .95vh, 12px) clamp(10px, .85vw, 12px) !important;
-  font-size: clamp(11px, .78vw, 12.5px) !important;
-  line-height: 1.18 !important;
-}
-.left-console > .radar-products-module.card .section-title {
-  font-size: clamp(10px, .68vw, 11.5px) !important;
-  margin-bottom: clamp(5px, .58vh, 7px) !important;
-  letter-spacing: .12em !important;
-}
-.left-console > .radar-products-module.card .sub-section-title {
-  margin-top: clamp(9px, .95vh, 12px) !important;
-  padding-top: clamp(8px, .95vh, 11px) !important;
-}
-.left-console > .radar-products-module.card .layer-btn {
-  margin: clamp(4px, .44vh, 5px) 0 !important;
-  padding: clamp(8px, .82vh, 10px) 9px !important;
-  font-size: clamp(11px, .78vw, 12.5px) !important;
-  line-height: 1.16 !important;
-}
-.left-console > .radar-products-module.card .toggle-row {
-  margin: clamp(3px, .42vh, 5px) 0 !important;
-  gap: 7px !important;
-  font-size: clamp(11px, .74vw, 12.5px) !important;
-  line-height: 1.16 !important;
-}
-.left-console > .radar-products-module.card input[type="checkbox"] {
-  width: 13px !important;
-  height: 13px !important;
-  flex: 0 0 13px !important;
-}
-.left-console > .dbz-module.card {
-  padding: clamp(9px, .9vh, 12px) clamp(9px, .78vw, 11px) !important;
-}
-.left-console > .dbz-module.card .legend-title {
-  font-size: clamp(10px, .7vw, 12px) !important;
-  margin-bottom: clamp(5px, .55vh, 7px) !important;
-}
-.left-console > .dbz-module.card .spectrum { height: clamp(10px, 1.25vh, 16px) !important; }
-.left-console > .dbz-module.card .legend-values,
-.left-console > .dbz-module.card .legend-scale {
-  font-size: clamp(7px, .57vw, 8.5px) !important;
-  margin-top: clamp(3px, .45vh, 5px) !important;
-  line-height: 1.02 !important;
-}
-@media (max-height: 760px) {
-  .left-console { top: 122px !important; max-height: calc(100vh - 132px) !important; width: 226px !important; gap: 6px !important; }
-  .left-console > .radar-products-module.card { padding: 8px 9px !important; }
-  .left-console > .radar-products-module.card .section-title { font-size: 10px !important; margin-bottom: 4px !important; }
-  .left-console > .radar-products-module.card .sub-section-title { margin-top: 7px !important; padding-top: 7px !important; }
-  .left-console > .radar-products-module.card .layer-btn { padding: 7px 8px !important; margin: 3px 0 !important; font-size: 10.5px !important; }
-  .left-console > .radar-products-module.card .toggle-row { margin: 2px 0 !important; font-size: 10.5px !important; }
-  .left-console > .dbz-module.card { padding: 7px 8px !important; }
-}
-
-/* v6: alert images keep full bleed horizontally, with vertical breathing room only; popup scales to viewport and keeps controls visible. */
-.alert-detail-popup.leaflet-popup { max-width: calc(100vw - 28px) !important; }
-.alert-detail-popup .leaflet-popup-content-wrapper,
-.alert-detail-popup .leaflet-popup-content { overflow: hidden !important; }
-.alert-detail-popup .leaflet-popup-content {
-  width: min(390px, calc(100vw - 34px)) !important;
-}
-.alert-popup-card {
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  max-height: min(82vh, 640px) !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
-.alert-popup-card > .alert-popup-image {
-  flex: 0 0 auto !important;
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  height: auto !important;
-  max-height: clamp(90px, 18vh, 170px) !important;
-  object-fit: cover !important;
-  margin: clamp(7px, 1vh, 10px) 0 clamp(7px, 1vh, 10px) !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-.alert-popup-card > .popup-scroll-body,
-.alert-popup-card .popup-scroll-body.alert-detail-scroll {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  padding: 0 10px 10px !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
-.alert-detail-scroll .popup-footer {
-  position: sticky !important;
-  bottom: 0 !important;
-  z-index: 2 !important;
-  flex: 0 0 auto !important;
-  padding: 8px 0 0 !important;
-  margin-top: 8px !important;
-  background: linear-gradient(to bottom, rgba(255,255,255,.84), #fff 38%) !important;
-}
-.alert-detail-scroll .popup-footer .popup-action {
-  min-height: clamp(32px, 5vh, 38px) !important;
-  padding: clamp(7px, 1vh, 9px) 10px !important;
-}
-@media (max-height: 700px) {
-  .alert-popup-card { max-height: calc(100vh - 54px) !important; }
-  .alert-popup-card > .alert-popup-image { max-height: 90px !important; margin-top: 6px !important; margin-bottom: 6px !important; }
-  .alert-detail-title h3 { font-size: 17px !important; }
-  .alert-detail-info { font-size: 12px !important; gap: 5px !important; }
-  .alert-detail-scroll .popup-footer .popup-action { min-height: 32px !important; padding-top: 6px !important; padding-bottom: 6px !important; }
-}
-@media (max-height: 560px) {
-  .alert-popup-card > .alert-popup-image { max-height: 64px !important; }
-  .alert-popup-card > .popup-scroll-body,
-  .alert-popup-card .popup-scroll-body.alert-detail-scroll { padding-left: 8px !important; padding-right: 8px !important; padding-bottom: 8px !important; }
-}
-
-
-/* v7: index alert images smaller with vertical-only padding; station info restored in JS. */
-#app .alert-detail-scroll .alert-popup-image,
-#app .alert-popup-card > .alert-popup-image {
-  width: 100% !important;
-  max-height: clamp(88px, 15vh, 135px) !important;
-  height: auto !important;
-  object-fit: contain !important;
-  margin: 7px 0 9px !important;
-  padding: 7px 0 !important;
-  box-sizing: border-box !important;
-}
-
-/* v10: keep sidebar dimensions from v9, align Radar Products top padding with the right module, and de-scroll/compact index alert popups. */
-.left-console > .radar-products-module.card {
-  padding-top: var(--hwos-panel-pad) !important;
-}
-
-/* Index alert detail popups should fit as a single scaled card instead of creating an internal scroll pane. */
-#app .alert-detail-popup .leaflet-popup-content {
-  width: min(390px, calc(100vw - 34px)) !important;
-}
-#app .alert-detail-popup .leaflet-popup-content-wrapper,
-#app .alert-detail-popup .leaflet-popup-content {
-  overflow: hidden !important;
-}
-#app .alert-popup-card {
-  max-height: min(78vh, 600px) !important;
-  overflow: hidden !important;
-}
-#app .alert-popup-card > .popup-scroll-body,
-#app .alert-popup-card .popup-scroll-body.alert-detail-scroll {
-  overflow-y: visible !important;
-  overflow-x: hidden !important;
-  padding: 0 10px 10px !important;
-  gap: 0 !important;
-}
-#app .alert-detail-title {
-  gap: 2px !important;
-  padding-bottom: 5px !important;
-}
-#app .alert-detail-title h3 {
-  font-size: clamp(15px, 1.9vw, 18px) !important;
-  line-height: 1.05 !important;
-}
-#app .alert-detail-title .popup-kicker,
-#app .alert-detail-title .popup-times {
-  font-size: 10.5px !important;
-  line-height: 1.15 !important;
-}
-#app .alert-detail-info {
-  font-size: 11.5px !important;
-  line-height: 1.22 !important;
-  gap: 4px !important;
-}
-#app .alert-detail-info .alert-row {
-  padding: 3px 0 !important;
-}
-#app .alert-detail-info .popup-plainline,
-#app .alert-detail-info .popup-area {
-  margin: 0 0 4px !important;
-}
-#app .alert-detail-scroll .popup-footer {
-  position: static !important;
-  padding: 6px 0 0 !important;
-  margin-top: 5px !important;
-  background: transparent !important;
-}
-#app .alert-detail-scroll .popup-footer .popup-action {
-  min-height: 31px !important;
-  padding: 6px 9px !important;
-  font-size: 11.5px !important;
-}
-
-/* Index alert images: slightly larger than v7/v9, still with vertical-only padding and no side padding. */
-#app .alert-detail-scroll .alert-popup-image,
-#app .alert-popup-card > .alert-popup-image {
-  width: 100% !important;
-  max-height: clamp(98px, 16.5vh, 148px) !important;
-  height: auto !important;
-  object-fit: contain !important;
-  margin: 7px 0 9px !important;
-  padding: 7px 0 !important;
-  box-sizing: border-box !important;
-}
-
-@media (max-height: 700px) {
-  #app .alert-popup-card { max-height: calc(100vh - 54px) !important; }
-  #app .alert-popup-card > .alert-popup-image { max-height: 102px !important; }
-  #app .alert-detail-title h3 { font-size: 15px !important; }
-  #app .alert-detail-info { font-size: 11px !important; line-height: 1.16 !important; }
-  #app .alert-detail-scroll .popup-footer .popup-action { min-height: 30px !important; padding-top: 5px !important; padding-bottom: 5px !important; }
-}
-
-/* v11: requested spacing/admin/logo restoration. */
-.left-console > .radar-products-module.card {
-  padding-top: 12px !important;
-}
-#app .alert-popup-card {
-  padding-bottom: 14px !important;
-}
-#app .alert-popup-card > .popup-scroll-body,
-#app .alert-popup-card .popup-scroll-body.alert-detail-scroll {
-  padding-bottom: 14px !important;
-}
-.logo-slot picture { width: 100%; height: 100%; display: block; }
-.logo-slot img#headerLogo { content: url('/logo.png'); }
 @media (max-width: 900px) {
-  .logo-slot img#headerLogo { content: url('/tablogo.png'); }
+  :root { --hwos-gap: .75rem; --hwos-pad: .75rem; }
 }
 
-/* v12: compact index alert copy further while adding breathing room around popup actions. */
-#app .alert-detail-popup .leaflet-popup-content {
-  width: min(380px, calc(100vw - 38px)) !important;
-}
-#app .alert-popup-card {
-  max-height: min(78vh, 590px) !important;
-  padding-bottom: 20px !important;
-}
-#app .alert-popup-card > .popup-scroll-body,
-#app .alert-popup-card .popup-scroll-body.alert-detail-scroll {
-  padding: 0 13px 20px !important;
-  overflow-y: visible !important;
-}
-#app .alert-detail-title h3 {
-  font-size: clamp(13px, 1.55vw, 16px) !important;
-  line-height: 1.04 !important;
-}
-#app .alert-detail-title .popup-kicker,
-#app .alert-detail-title .popup-times {
-  font-size: 9.8px !important;
-  line-height: 1.12 !important;
-}
-#app .alert-detail-info,
-#app .alert-detail-info .popup-area,
-#app .alert-detail-info .popup-plainline,
-#app .alert-detail-info .alert-row,
-#app .alert-detail-info p {
-  font-size: 10.7px !important;
-  line-height: 1.16 !important;
-}
-#app .alert-detail-scroll .popup-footer {
-  padding: 9px 0 0 !important;
-  margin-top: 7px !important;
-}
-#app .alert-detail-scroll .popup-footer .popup-action {
-  min-height: 32px !important;
-  padding: 7px 10px !important;
-  font-size: 11px !important;
-}
-@media (max-height: 700px) {
-  #app .alert-detail-title h3 { font-size: 13px !important; }
-  #app .alert-detail-info { font-size: 10px !important; line-height: 1.12 !important; }
-  #app .alert-popup-card > .popup-scroll-body,
-  #app .alert-popup-card .popup-scroll-body.alert-detail-scroll { padding-bottom: 16px !important; }
+/* Bootstrap layout polish: remove accidental global left accents and normalize module spacing. */
+.topbar.card,
+.left-console.card,
+.info-panel.card,
+.settings-drawer.card,
+.admin-message-banner.card,
+.radar-legend,
+.radar-playback {
+  margin: 0 !important;
+  border-left: 1px solid var(--line) !important;
 }
 
-/* v14: add breathing room between the header and the left Radar Products stack. */
+/* Normal content modules should look like Bootstrap cards, not warning cards. */
+.content-box,
+.info-panel .scroll-stack > .card,
+#forecast > .card,
+#observations > .card,
+#alerts > .card:not(.alert-card),
+.metric {
+  border: 1px solid var(--line) !important;
+  border-left: 1px solid var(--line) !important;
+  border-radius: var(--bs-border-radius) !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, .05);
+}
+
+.content-box {
+  margin: 0 .875rem .875rem !important;
+  padding: .875rem !important;
+}
+.info-panel .scroll-stack {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  padding: 0 .875rem .875rem;
+}
+.info-panel .scroll-stack > .card,
+#forecast > .card,
+#observations > .card,
+#alerts > .card {
+  margin: 0 !important;
+  padding: .875rem !important;
+}
+
+/* Alert cards keep a severity accent, but use the alert color rather than the generic module border. */
+#alerts > .alert-card,
+.alert-card {
+  border: 1px solid var(--line) !important;
+  border-left: 6px solid var(--statement) !important;
+  border-radius: var(--bs-border-radius) !important;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, .08);
+}
+#alerts > .alert-card.alert-warning,
+.alert-card.alert-warning { border-left-color: var(--danger) !important; }
+#alerts > .alert-card.alert-watch,
+.alert-card.alert-watch { border-left-color: var(--watch) !important; }
+#alerts > .alert-card.alert-advisory,
+.alert-card.alert-advisory { border-left-color: var(--advisory) !important; }
+#alerts > .alert-card.alert-statement,
+.alert-card.alert-statement { border-left-color: var(--statement) !important; }
+
 .left-console {
-  top: 146px !important;
-  max-height: calc(100% - 198px) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
-@media (max-width: 860px) {
-  .left-console { top: auto !important; max-height: none !important; }
+.console-section {
+  padding: 1rem !important;
+}
+.console-section .layer-btn,
+.console-section .toggle-row {
+  margin-top: .5rem;
+  margin-bottom: 0;
+}
+.console-section .section-title + .layer-btn,
+.console-section .section-title + .toggle-row { margin-top: 0; }
+
+.panel-header {
+  padding: 1rem !important;
+}
+.status {
+  margin: .875rem !important;
+  padding: .75rem .875rem !important;
+  border-left: 0 !important;
+  border: 1px solid var(--line) !important;
+}
+.mini-grid {
+  gap: .75rem !important;
+  padding: 0 .875rem .875rem !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+.mini-grid .station-metric {
+  grid-column: 1 / -1;
+}
+.metric {
+  margin: 0 !important;
+  padding: .75rem !important;
+}
+.padded {
+  padding: .875rem .875rem .5rem !important;
+}
+.panel-tabs {
+  margin-top: .125rem;
+}
+.tab-content {
+  padding-bottom: .875rem !important;
+}
+
+.settings-drawer {
+  padding: 0 !important;
+}
+.settings-field,
+.settings-toggle,
+.settings-note,
+.settings-actions,
+.settings-subsection {
+  margin-left: 1rem !important;
+  margin-right: 1rem !important;
+}
+.settings-head {
+  padding: 1rem !important;
+}
+
+/* Dark mode border cleanup. */
+#app[data-color-scheme="dark"] .content-box,
+#app[data-color-scheme="dark"] .info-panel .scroll-stack > .card,
+#app[data-color-scheme="dark"] #forecast > .card,
+#app[data-color-scheme="dark"] #observations > .card,
+#app[data-color-scheme="dark"] #alerts > .card:not(.alert-card),
+#app[data-color-scheme="dark"] .metric,
+#app[data-color-scheme="dark"] .status {
+  border-color: #374151 !important;
+  box-shadow: none;
+}
+
+/* 2026-06-29 zoom/overlap guard: panel positions now follow the rendered header height. */
+:root {
+  --hwos-panel-top: 132px;
+  --hwos-panel-bottom-gap: 52px;
+  --hwos-console-width: 252px;
+  --hwos-info-width: 340px;
+}
+.left-console,
+.info-panel,
+.settings-drawer {
+  top: var(--hwos-panel-top) !important;
+  max-height: calc(100% - var(--hwos-panel-top) - var(--hwos-panel-bottom-gap)) !important;
+}
+.admin-message-stack {
+  top: var(--hwos-panel-top) !important;
+  left: calc(14px + var(--hwos-console-width) + 34px) !important;
+  right: calc(14px + var(--hwos-info-width) + 56px) !important;
+}
+.toast-stack {
+  top: calc(var(--hwos-panel-top) + var(--hwos-toast-offset, 0px)) !important;
+  right: calc(14px + var(--hwos-info-width) + 20px) !important;
+}
+
+/* Switch to a safe stacked workspace before zoomed desktop panels can collide. */
+@media (max-width: 1250px), (max-height: 720px) {
+  body { overflow: auto; }
+  html, body, #app { min-height: 100%; height: auto; }
+  #app {
+    display: grid;
+    grid-template-columns: minmax(240px, 310px) minmax(0, 1fr);
+    grid-template-areas:
+      "topbar topbar"
+      "admin admin"
+      "left map"
+      "info info"
+      "play play"
+      "legend legend"
+      "toast toast";
+    gap: 12px;
+    padding: 12px;
+    min-height: 100vh;
+    background: var(--bg);
+  }
+  #map {
+    grid-area: map;
+    position: relative;
+    min-height: min(62vh, 640px);
+    height: 62vh;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .topbar,
+  .left-console,
+  .info-panel,
+  .radar-legend,
+  .radar-playback,
+  .toast-stack,
+  .admin-message-stack {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-height: none !important;
+    transform: none !important;
+    z-index: auto;
+  }
+  .topbar {
+    grid-area: topbar;
+    display: grid;
+    grid-template-columns: minmax(96px, 150px) minmax(0, 1fr) 48px;
+    align-items: center;
+    min-height: 0;
+  }
+  .topbar .location-box {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .admin-message-stack { grid-area: admin; display: grid; }
+  .left-console {
+    grid-area: left;
+    align-self: start;
+    overflow: visible;
+  }
+  .info-panel {
+    grid-area: info;
+    overflow: visible;
+  }
+  .tab-content { max-height: none; }
+  .radar-playback { grid-area: play; justify-content: center; flex-wrap: wrap; }
+  .radar-legend { grid-area: legend; }
+  .toast-stack { grid-area: toast; display: grid; pointer-events: auto; }
+  .settings-drawer {
+    position: fixed !important;
+    z-index: 900;
+    inset: 12px !important;
+    width: auto !important;
+    max-height: calc(100vh - 24px) !important;
+    transform: translateY(calc(100% + 24px)) !important;
+  }
+  .settings-drawer.open { transform: translateY(0) !important; }
+}
+
+@media (max-width: 980px) {
+  #app {
+    display: flex;
+    grid-template-columns: none;
+    grid-template-areas: none;
+  }
+  #map { height: 56vh; min-height: 360px; }
+}
+
+@media (max-width: 700px) {
+  .topbar .location-box { grid-template-columns: 1fr; }
+}
+
+
+/* 2026-06-29 main UI panel padding / responsive refinement + restored bottom panel */
+:root {
+  --hwos-edge: clamp(14px, 1.15vw, 24px);
+  --hwos-card-pad: clamp(.95rem, .9vw, 1.25rem);
+  --hwos-panel-top: clamp(142px, 13.2vh, 168px);
+  --hwos-panel-bottom-gap: 108px;
+  --hwos-console-width: clamp(260px, 15vw, 300px);
+  --hwos-info-width: clamp(360px, 20vw, 410px);
+}
+
+.topbar {
+  left: var(--hwos-edge) !important;
+  right: var(--hwos-edge) !important;
+  top: var(--hwos-edge) !important;
+  min-height: clamp(96px, 10vh, 124px) !important;
+  padding: var(--hwos-card-pad) clamp(1rem, 1.15vw, 1.45rem) !important;
+  gap: clamp(.85rem, 1.1vw, 1.4rem) !important;
+  grid-template-columns: clamp(185px, 11vw, 230px) minmax(360px, 1fr) minmax(360px, 520px) 52px !important;
+}
+.logo-slot {
+  width: clamp(178px, 10.5vw, 218px) !important;
+  height: clamp(64px, 6vh, 82px) !important;
+}
+.left-console {
+  left: var(--hwos-edge) !important;
+  top: var(--hwos-panel-top) !important;
+  width: var(--hwos-console-width) !important;
+  max-height: calc(100% - var(--hwos-panel-top) - var(--hwos-panel-bottom-gap)) !important;
+  padding: .25rem !important;
+}
+.info-panel {
+  right: var(--hwos-edge) !important;
+  top: var(--hwos-panel-top) !important;
+  width: var(--hwos-info-width) !important;
+  max-height: calc(100% - var(--hwos-panel-top) - var(--hwos-panel-bottom-gap)) !important;
+}
+.console-section,
+.panel-header,
+.content-box,
+.metric,
+.settings-field,
+.settings-toggle,
+.settings-note,
+.settings-actions,
+.settings-subsection {
+  padding: var(--hwos-card-pad) !important;
+}
+.content-box,
+.info-panel .scroll-stack > .card,
+#forecast > .card,
+#observations > .card,
+#alerts > .card {
+  margin: .75rem var(--hwos-card-pad) !important;
+}
+.mini-grid {
+  padding: 0 var(--hwos-card-pad) var(--hwos-card-pad) !important;
+  gap: .85rem !important;
+}
+.status {
+  margin: var(--hwos-card-pad) !important;
+}
+.panel-tabs .tab-btn {
+  min-height: 42px;
+}
+
+.bottom-info-bar {
+  position: absolute;
+  z-index: 505;
+  left: calc(var(--hwos-edge) + var(--hwos-console-width) + 18px);
+  right: calc(var(--hwos-edge) + var(--hwos-info-width) + 18px);
+  bottom: var(--hwos-edge);
+  display: grid;
+  grid-template-columns: minmax(160px, 1.2fr) minmax(120px, .8fr) minmax(110px, .65fr) minmax(180px, 1fr);
+  gap: .75rem;
+  align-items: center;
+  padding: .75rem .9rem;
+  border-radius: var(--bs-border-radius);
+  background: rgba(255,255,255,.96);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+}
+.bottom-info-item {
+  min-width: 0;
+  border-right: 1px solid var(--line);
+  padding-right: .75rem;
+}
+.bottom-info-item:last-child { border-right: 0; padding-right: 0; }
+.bottom-info-item span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+}
+.bottom-info-item strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(12px, .85vw, 15px);
+}
+.radar-playback {
+  bottom: calc(var(--hwos-edge) + 64px) !important;
+}
+.radar-legend {
+  left: var(--hwos-edge) !important;
+  bottom: var(--hwos-edge) !important;
+  width: var(--hwos-console-width) !important;
+}
+.toast-stack {
+  right: calc(var(--hwos-edge) + var(--hwos-info-width) + 20px) !important;
+}
+.admin-message-stack {
+  left: calc(var(--hwos-edge) + var(--hwos-console-width) + 34px) !important;
+  right: calc(var(--hwos-edge) + var(--hwos-info-width) + 56px) !important;
+}
+
+#app[data-color-scheme="dark"] .bottom-info-bar {
+  background: rgba(15, 23, 42, .96);
+  border-color: #334155;
+}
+#app[data-color-scheme="dark"] .bottom-info-item { border-right-color: #334155; }
+
+@media (min-width: 1500px) and (min-height: 850px) {
+  .topbar { grid-template-columns: clamp(205px, 12vw, 250px) minmax(460px, 1fr) minmax(420px, 560px) 52px !important; }
+  .left-console, .info-panel { top: var(--hwos-panel-top) !important; }
+}
+
+/* Switch only when it truly needs to, and preserve generous spacing in stacked mode. */
+@media (max-width: 1320px), (max-height: 760px) {
+  body { overflow: auto; }
+  html, body, #app { min-height: 100%; height: auto; }
+  #app {
+    display: grid;
+    grid-template-columns: minmax(250px, 330px) minmax(0, 1fr);
+    grid-template-areas:
+      "topbar topbar"
+      "admin admin"
+      "left map"
+      "info info"
+      "play play"
+      "bottom bottom"
+      "legend legend"
+      "toast toast";
+    gap: 1rem;
+    padding: 1rem;
+    min-height: 100vh;
+    background: var(--bg);
+  }
+  #map {
+    grid-area: map;
+    position: relative;
+    min-height: min(62vh, 680px);
+    height: 62vh;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .topbar,
+  .left-console,
+  .info-panel,
+  .radar-legend,
+  .radar-playback,
+  .toast-stack,
+  .admin-message-stack,
+  .bottom-info-bar {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-height: none !important;
+    transform: none !important;
+    z-index: auto;
+  }
+  .topbar {
+    grid-area: topbar;
+    grid-template-columns: minmax(120px, 170px) minmax(0, 1fr) 48px !important;
+    min-height: 0 !important;
+  }
+  .topbar .location-box { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) auto; }
+  .admin-message-stack { grid-area: admin; display: grid; }
+  .left-console { grid-area: left; align-self: start; overflow: visible; }
+  .info-panel { grid-area: info; overflow: visible; }
+  .tab-content { max-height: none; }
+  .radar-playback { grid-area: play; justify-content: center; flex-wrap: wrap; }
+  .bottom-info-bar { grid-area: bottom; grid-template-columns: repeat(2, minmax(0, 1fr)); pointer-events: auto; }
+  .radar-legend { grid-area: legend; }
+  .toast-stack { grid-area: toast; display: grid; pointer-events: auto; }
+  .settings-drawer {
+    position: fixed !important;
+    z-index: 900;
+    inset: 12px !important;
+    width: auto !important;
+    max-height: calc(100vh - 24px) !important;
+    transform: translateY(calc(100% + 24px)) !important;
+  }
+  .settings-drawer.open { transform: translateY(0) !important; }
+}
+
+@media (max-width: 980px) {
+  #app { display: flex; gap: .9rem; padding: .9rem; }
+  #map { height: 56vh; min-height: 360px; }
+  .bottom-info-bar { order: 6; grid-template-columns: 1fr; }
+  .bottom-info-item { border-right: 0; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: .6rem; }
+  .bottom-info-item:last-child { border-bottom: 0; padding-bottom: 0; }
+}
+
+@media (max-width: 700px) {
+  .topbar .location-box { grid-template-columns: 1fr; }
+  .topbar { grid-template-columns: 70px 1fr 42px !important; }
+  .logo-slot { width: 66px !important; height: 46px !important; padding-left: 6px !important; }
 }

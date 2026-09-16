@@ -5,18 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FCDR HWOS</title>
   <link rel="icon" type="image/png" href="/tablogo.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9Oer+R4BEmj7Skz9YWeYuQm0I7qUoZ2nT7G58q6e5Q" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <link rel="stylesheet" href="https://unpkg.com/esri-leaflet@3.0.12/dist/esri-leaflet.css" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <div id="app" class="theme-government">
     <main id="map"></main>
 
-    <header class="topbar" role="banner">
+    <header class="topbar card" role="banner">
       <div class="logo-slot" aria-label="Agency logo area">
-        <picture><source media="(max-width: 900px)" srcset="/tablogo.png" /><img id="headerLogo" src="/logo.png" alt="Fulton County Disaster Response logo" /></picture>
+        <picture><source media="(max-width: 560px)" srcset="/tablogo.png" /><img src="/logo.png" alt="Fulton County Disaster Response logo" /></picture>
       </div>
 
       <div class="title-block">
@@ -27,56 +27,53 @@
 
       <form id="locationForm" class="location-box" aria-label="Location selector">
         <input id="locationSearch" value="Fulton County, Indiana" placeholder="County, town, ZIP, or lat,lon" autocomplete="off" />
-        <button type="submit" class="primary-btn">Set Location</button>
+        <button type="submit" class="primary-btn btn btn-primary">Set Location</button>
       </form>
 
-      <button id="settingsBtn" class="icon-btn" type="button" title="Settings" aria-label="Settings">⚙</button>
+      <button id="settingsBtn" class="icon-btn btn btn-light" type="button" title="Settings" aria-label="Settings">⚙</button>
     </header>
 
     <div id="adminMessageStack" class="admin-message-stack" aria-live="polite"></div>
 
-    <aside class="left-console" aria-label="Map controls">
-      <section class="console-section radar-products-module card">
+    <aside class="left-console card" aria-label="Map controls">
+      <section class="console-section card-body">
         <div class="section-title">Radar Products</div>
-        <button class="layer-btn active" data-radar="reflectivity">Base Reflectivity</button>
-        <button class="layer-btn" data-radar="alerts">Warnings / Watches / Advisories</button>
+        <button class="layer-btn btn active" data-radar="reflectivity">Base Reflectivity</button>
+        <button class="layer-btn btn" data-radar="alerts">Warnings / Watches / Advisories</button>
+      </section>
 
-        <div class="section-title sub-section-title">Layers</div>
+      <section class="console-section card-body">
+        <div class="section-title">Layers</div>
         <label class="toggle-row"><input id="radarToggle" type="checkbox" checked /> Radar</label>
         <label class="toggle-row"><input id="boundaryToggle" type="checkbox" checked /> Selected area outline</label>
         <label class="toggle-row"><input id="alertsLayerToggle" type="checkbox" checked /> Warning polygons</label>
         <label class="toggle-row"><input id="stormMotionToggle" type="checkbox" checked /> Storm motion</label>
         <label class="toggle-row"><input id="spotterModeToggle" type="checkbox" /> Spotter Mode</label>
         <label class="toggle-row"><input id="countiesToggle" type="checkbox" checked /> County/town boundary</label>
+      </section>
 
-        <div class="section-title sub-section-title">Storm Hazards</div>
-        <label class="toggle-row"><input type="checkbox" class="hazard-toggle" value="Tornado" checked /> Tornado</label>
-        <label class="toggle-row"><input type="checkbox" class="hazard-toggle" value="Severe Thunderstorm" checked /> Severe Thunderstorm</label>
-        <label class="toggle-row"><input type="checkbox" class="hazard-toggle" value="Flash Flood" checked /> Flash Flood</label>
-        <label class="toggle-row"><input type="checkbox" class="hazard-toggle" value="Special Weather" checked /> Special Weather</label>
+      <section class="console-section hazard-panel">
+        <div class="section-title">Storm Hazards</div>
+        <label class="toggle-row"><input type="radio" name="hazardDisplayMode" class="hazard-mode" value="storm" checked /> Storm Based Warnings</label>
+        <label class="toggle-row"><input type="radio" name="hazardDisplayMode" class="hazard-mode" value="all" /> All Warnings</label>
+      </section>
 
-        <div class="section-title sub-section-title">Watches, Warnings &amp; Advisories</div>
+      <section class="console-section hazard-panel">
+        <div class="section-title">Watches, Warnings & Advisories</div>
         <label class="toggle-row"><input type="checkbox" class="alert-toggle" value="Warning" checked /> Warnings</label>
         <label class="toggle-row"><input type="checkbox" class="alert-toggle" value="Watch" checked /> Watches</label>
         <label class="toggle-row"><input type="checkbox" class="alert-toggle" value="Advisory" checked /> Advisories</label>
         <label class="toggle-row"><input type="checkbox" class="alert-toggle" value="Statement" checked /> Statements</label>
       </section>
-
-      <section class="console-section dbz-console-section dbz-module card" aria-label="Radar reflectivity legend">
-        <div class="legend-title">Reflectivity dBZ</div>
-        <div class="spectrum"></div>
-        <div class="legend-values"><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span><span>40</span><span>45</span><span>50</span><span>55</span><span>60</span><span>65+</span></div>
-        <div class="legend-scale"><span>Light</span><span>Moderate</span><span>Heavy</span><span>Extreme</span></div>
-      </section>
     </aside>
 
-    <section class="info-panel" aria-label="Weather information">
+    <section class="info-panel card" aria-label="Weather information">
       <div class="panel-header">
         <div>
           <div class="section-title">Selected Location</div>
           <strong id="placeName">Fulton County, Indiana</strong>
         </div>
-        <button id="locateBtn" type="button" class="secondary-btn">Use GPS</button>
+        <button id="locateBtn" type="button" class="secondary-btn btn btn-outline-secondary">Use GPS</button>
       </div>
 
       <div id="status" class="status">Initializing.</div>
@@ -88,10 +85,10 @@
       </div>
 
       <nav class="panel-tabs" aria-label="Information tabs">
-        <button class="tab-btn active" data-tab="current">Current</button>
-        <button class="tab-btn" data-tab="alerts">Alerts</button>
-        <button class="tab-btn" data-tab="forecast">Forecast</button>
-        <button class="tab-btn" data-tab="observations">Obs</button>
+        <button class="tab-btn btn active" data-tab="current">Current</button>
+        <button class="tab-btn btn" data-tab="alerts">Alerts</button>
+        <button class="tab-btn btn" data-tab="forecast">Forecast</button>
+        <button class="tab-btn btn" data-tab="observations">Obs</button>
       </nav>
 
       <div class="tab-content active" id="tab-current">
@@ -115,6 +112,12 @@
       </div>
     </section>
 
+    <div class="radar-legend" aria-label="Radar reflectivity legend">
+      <div class="legend-title">Reflectivity dBZ</div>
+      <div class="spectrum"></div>
+      <div class="legend-values"><span>5</span><span>10</span><span>15</span><span>20</span><span>25</span><span>30</span><span>35</span><span>40</span><span>45</span><span>50</span><span>55</span><span>60</span><span>65+</span></div>
+      <div class="legend-scale"><span>Light</span><span>Moderate</span><span>Heavy</span><span>Extreme</span></div>
+    </div>
 
     <div class="radar-playback" aria-label="Radar playback controls">
       <button id="radarStepBack" type="button" title="Previous frame">⏮</button>
@@ -124,15 +127,23 @@
       <span id="radarTimeLabel">Live radar</span>
     </div>
 
+
+    <div id="bottomInfoBar" class="bottom-info-bar card" aria-label="System summary">
+      <div class="bottom-info-item"><span>Location</span><strong id="bottomPlaceName">Fulton County, Indiana</strong></div>
+      <div class="bottom-info-item"><span>NWS Office</span><strong id="bottomOfficeMetric">—</strong></div>
+      <div class="bottom-info-item"><span>Active Alerts</span><strong id="bottomAlertMetric">—</strong></div>
+      <div class="bottom-info-item bottom-info-wide"><span>Radar</span><strong id="bottomRadarTime">Live radar</strong></div>
+    </div>
+
     <div id="toastStack" class="toast-stack" aria-live="polite"></div>
 
-    <aside id="settingsDrawer" class="settings-drawer" aria-hidden="true">
+    <aside id="settingsDrawer" class="settings-drawer card" aria-hidden="true">
       <div class="settings-head">
         <div>
           <div class="section-title">Settings</div>
           <strong>Display & Alerting</strong>
         </div>
-        <button id="closeSettings" class="icon-btn" type="button" aria-label="Close settings">×</button>
+        <button id="closeSettings" class="icon-btn btn btn-light" type="button" aria-label="Close settings">×</button>
       </div>
 
       <label class="settings-field">Map theme
@@ -153,6 +164,10 @@
 
       <label class="settings-field">Radar opacity
         <input id="radarOpacity" type="range" min="20" max="95" value="68" />
+      </label>
+
+      <label class="settings-field">County warning fill opacity
+        <input id="alertFillOpacity" type="range" min="15" max="85" value="50" />
       </label>
 
       <label class="settings-field">Units
@@ -183,7 +198,37 @@
 
       <label class="toggle-row settings-toggle"><input id="popupToggle" type="checkbox" checked /> Enable right-side alert popups</label>
 
-      <button id="resetPreferencesBtn" class="secondary-btn" type="button">Reset saved preferences</button>
+      <div class="settings-subsection discord-settings">
+        <div class="section-title">Discord Webhook</div>
+        <label class="toggle-row settings-toggle"><input id="discordWebhookEnabled" type="checkbox" /> Send alerts to Discord</label>
+        <label class="settings-field">Webhook link
+          <input id="discordWebhookUrl" type="password" placeholder="https://discord.com/api/webhooks/..." autocomplete="off" />
+        </label>
+        <label class="settings-field">Location mode
+          <select id="discordWebhookMode">
+            <option value="selected">Selected location</option>
+            <option value="filter">Station / airport / county filter</option>
+            <option value="spotter">Spotter mode — all active alerts</option>
+          </select>
+        </label>
+        <label class="settings-field">Filter
+          <input id="discordWebhookFilter" placeholder="KRCR, RCR, [Fulton, IN], or spotter" />
+        </label>
+        <div class="settings-note">Station/airport examples: KRCR, RCR, KIND. County format: [Fulton, IN]. Type spotter or choose Spotter Mode for all active alerts. Admin messages always send when enabled.</div>
+        <div class="settings-field">Alert types
+          <label class="toggle-row"><input class="discord-kind" type="checkbox" value="Warning" checked /> Warnings</label>
+          <label class="toggle-row"><input class="discord-kind" type="checkbox" value="Watch" checked /> Watches</label>
+          <label class="toggle-row"><input class="discord-kind" type="checkbox" value="Advisory" checked /> Advisories</label>
+          <label class="toggle-row"><input class="discord-kind" type="checkbox" value="Statement" checked /> Statements</label>
+        </div>
+        <div class="settings-actions">
+          <button id="saveDiscordWebhook" class="secondary-btn btn btn-outline-secondary" type="button">Save Discord webhook</button>
+          <button id="testDiscordWebhook" class="secondary-btn btn btn-outline-secondary" type="button">Send test</button>
+        </div>
+        <div id="discordWebhookStatus" class="settings-note">Not loaded.</div>
+      </div>
+
+      <button id="resetPreferencesBtn" class="secondary-btn btn btn-outline-secondary" type="button">Reset saved preferences</button>
 
       <div class="settings-note">
         Preferences are saved in this browser only, including map theme, radar layers, alert settings, voice, Spotter Mode, and last selected location.

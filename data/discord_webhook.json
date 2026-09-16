@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "webhookUrl": "https://discord.com/api/webhooks/1516495782943916222/PYQRftTgw9KF78_L4Hkl_Xz9v2UHcnFxc1DE30ASu3bTGmlgQp4iuLsodLZ3krvmIFIh",
+  "mode": "filter",
+  "filter": "KRCR",
+  "selectedLocation": {
+    "lat": 41.0421416,
+    "lon": -86.2875206,
+    "label": "Fulton County, Indiana, United States"
+  },
+  "alertKinds": [
+    "Warning",
+    "Watch"
+  ],
+  "includeAdminMessages": true,
+  "quietFirstRun": true,
+  "pollSeconds": 60
+}

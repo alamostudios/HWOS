@@ -14,11 +14,14 @@ npm run dev
 Open:
 
 ```text
-http://localhost:5000
+http://localhost
 ```
 
-Default port is now `5000`.
+Default port is now `80`. On Windows, run the terminal as Administrator if binding to port 80 is denied. To override it temporarily:
 
+```cmd
+set PORT=3001 && npm run dev
+```
 
 ## Included features
 
@@ -116,8 +119,14 @@ Replace these files with your own artwork when ready:
 
 ## UI v4 changes
 
-- Default port changed to `5000`.
+- Default port changed to `80`.
+- Default contact/app identity set to `octokid13@gmail.com` and `weather.alamostudios.net`.
+- Radar playback now pulls NOAA/NWS time-enabled ImageServer frames through `/api/radar/frames`.
+- Playback uses explicit frame timestamps instead of cycling the latest-only radar service.
 
+## Admin test console
+
+Open `/admin` on the same host to broadcast simulated local alerts to all currently open HWOS clients. The admin page can send preset alert types, custom messages, and preview/select alert sounds. These are browser/SSE test messages only; they do not create official NWS alerts.
 
 ## UI v5.1 changes
 
@@ -126,6 +135,24 @@ Replace these files with your own artwork when ready:
 - The Theme selector now contains only the OpenStreetMap-based map themes: OpenStreetMap Standard, OpenStreetMap Humanitarian, and OpenTopoMap.
 - Locked the admin console behind server-side authentication. Admin credentials are never placed in browser JavaScript, HTML, or localStorage.
 
+## Admin login setup
+
+Set these environment variables on the server before starting the app:
+
+```bash
+ADMIN_USER=admin
+ADMIN_PASSWORD_HASH=<generated-hash>
+SESSION_SECRET=<long-random-secret>
+npm start
+```
+
+Generate `ADMIN_PASSWORD_HASH` locally with:
+
+```bash
+npm run hash-password -- your-password-here
+```
+
+For quick local testing only, you can use `ADMIN_PASSWORD=your-password-here` instead of `ADMIN_PASSWORD_HASH`. Production should use `ADMIN_PASSWORD_HASH` plus a stable `SESSION_SECRET` so users stay logged in across server restarts.
 
 The protected routes are:
 
@@ -137,3 +164,42 @@ The protected routes are:
 ```
 
 Unauthenticated users are redirected to `/admin/login`.
+
+## Fish Audio TTS setup
+
+The alert reader now uses Fish Audio through the Node server, not from browser JavaScript. This keeps the API key private.
+
+Set these environment variables before starting the app:
+
+```bash
+FISH_AUDIO_API_KEY=your_fish_audio_api_key
+FISH_AUDIO_REFERENCE_ID=ethan_voice_reference_id
+FISH_AUDIO_VOICE_NAME=Ethan
+FISH_AUDIO_MODEL=s2-pro
+```
+
+`FISH_AUDIO_REFERENCE_ID` must be the Fish Audio voice model/reference ID for Ethan. The public UI only shows "Fish Audio — Ethan" and never exposes the key or reference ID. If Fish Audio is not configured or the request fails, the app falls back to the existing Echo/browser TTS options.
+
+
+## Discord Webhook Alerts
+
+Open Settings in the FCDR page and configure Discord Webhook Alerts. Paste a Discord channel webhook URL, choose Selected Location, Filter, or Spotter Mode, select the alert categories, then save.
+
+Supported filter examples:
+
+- `KRCR`
+- `RCR`
+- `KIND`
+- `[Fulton, IN]`
+- `spotter`
+
+Webhook posting is deduped server-side and only posts newly issued alerts after configuration. Administrative messages always post when webhook forwarding is enabled.
+
+
+## Alert Images / Multi-Alert Popup
+
+Preset event images are served from `public/assets/weather-alerts/`. ntfy and Discord webhook notifications use those images, and map popups now show a clean alert summary with a full NWS API link. Multiple alerts at the same clicked location open an alert picker first.
+
+
+## Layout framework
+This build uses Bootstrap 5.3 from the official jsDelivr CDN for baseline component spacing, button rhythm, form normalization, and responsive behavior. HWOS-specific CSS remains in `public/style.css`, `public/admin.css`, and `public/tv.css` only for product colors, map overlay placement, and weather-specific modules.

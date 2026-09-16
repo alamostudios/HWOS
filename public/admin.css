@@ -1,3 +1,11 @@
+
+/* Bootstrap integration: Bootstrap supplies component rhythm; this file only preserves HWOS colors/layout. */
+:root {
+  --bs-primary: #2563eb;
+  --bs-primary-rgb: 37, 99, 235;
+  --bs-border-radius: .625rem;
+}
+.btn-primary { --bs-btn-bg:#2563eb; --bs-btn-border-color:#1d4ed8; --bs-btn-hover-bg:#1d4ed8; --bs-btn-hover-border-color:#1e40af; }
 :root { --accent:#CCFF00; --text:#111827; --muted:#5b6472; --line:#ccd3dc; --bg:#eef1f5; --panel:#fff; --danger:#b91c1c; }
 * { box-sizing:border-box; }
 body { margin:0; min-height:100vh; font-family:"Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); }
@@ -67,6 +75,3 @@ button.send { background:var(--danger); color:#fff; }
 .danger-btn { background:var(--danger); color:#fff; }
 @media (max-width:800px) { .admin-expire-controls { grid-template-columns:1fr; } }
 @media (prefers-color-scheme: dark) { .current-admin-message { background:#111827; } }
-
-/* v12 admin targeted broadcast helper text */
-.field-help { display:block; margin-top:6px; color:#64748b; font-size:12px; line-height:1.35; }

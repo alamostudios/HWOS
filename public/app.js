@@ -27,6 +27,8 @@ const defaultPreferences = {
   soundEnabled: true,
   autoReadAlerts: true,
   popupEnabled: true,
+  alertFillOpacity: 50,
+  hazardDisplayMode: 'storm',
   ttsMode: 'short',
   ttsVoiceURI: 'david',
   layers: {
@@ -36,7 +38,7 @@ const defaultPreferences = {
     stormMotion: true,
     counties: true
   },
-  hazards: ['Tornado', 'Severe Thunderstorm', 'Flash Flood', 'Special Weather'],
+  hazards: ['Tornado', 'Severe Thunderstorm', 'Flash Flood', 'Flood'],
   alertKinds: ['Warning', 'Watch', 'Advisory', 'Statement'],
   location: null
 };
@@ -53,6 +55,7 @@ function readPreferences() {
       ...saved,
       layers: { ...defaultPreferences.layers, ...(saved.layers || {}) },
       hazards: Array.isArray(saved.hazards) ? saved.hazards : defaultPreferences.hazards,
+      hazardDisplayMode: ['storm', 'all'].includes(saved.hazardDisplayMode) ? saved.hazardDisplayMode : (saved.hazards && saved.hazards.length ? 'storm' : defaultPreferences.hazardDisplayMode),
       alertKinds: Array.isArray(saved.alertKinds) ? saved.alertKinds : defaultPreferences.alertKinds
     };
   } catch {
@@ -93,11 +96,13 @@ function applySavedControls() {
   setCheckbox('popupToggle', prefs.popupEnabled);
 
   if ($('radarOpacity')) $('radarOpacity').value = String(prefs.radarOpacity);
+  if ($('alertFillOpacity')) $('alertFillOpacity').value = String(prefs.alertFillOpacity || 50);
   if ($('themeSelect')) $('themeSelect').value = prefs.theme;
   if ($('displayModeSelect')) $('displayModeSelect').value = prefs.colorScheme;
   if ($('ttsModeSelect')) $('ttsModeSelect').value = prefs.ttsMode;
 
   document.querySelectorAll('.hazard-toggle').forEach(cb => { cb.checked = prefs.hazards.includes(cb.value); });
+  document.querySelectorAll('.hazard-mode').forEach(rb => { rb.checked = rb.value === (prefs.hazardDisplayMode || 'storm'); });
   document.querySelectorAll('.alert-toggle').forEach(cb => { cb.checked = prefs.alertKinds.includes(cb.value); });
   document.querySelectorAll('.layer-btn[data-radar]').forEach(btn => btn.classList.toggle('active', btn.dataset.radar === prefs.radarProduct));
 }
@@ -138,6 +143,10 @@ const state = {
   ttsVoiceURI: prefs.ttsVoiceURI,
   activeTts: null,
   enabledHazards: new Set(prefs.hazards),
+  hazardDisplayMode: prefs.hazardDisplayMode || 'storm',
+  alertFillOpacity: Number(prefs.alertFillOpacity || 50) / 100,
+  zoneGeometryCache: new Map(),
+  alertLayerRenderToken: 0,
   enabledKinds: new Set(prefs.alertKinds),
   radarOpacity: Number(prefs.radarOpacity || 68) / 100,
   radarPlaying: false,
@@ -203,20 +212,23 @@ function updateRadarImage() {
 
 const alertLayer = L.geoJSON(null, {
   style(feature) {
-    const event = feature.properties?.event || '';
+    const p = feature.properties || {};
+    const event = p.event || '';
+    const countyFill = p._derivedZone === true || !feature.geometry || feature.geometry?.type === 'Polygon' || feature.geometry?.type === 'MultiPolygon';
+    const opacity = Math.max(0.15, Math.min(0.85, state.alertFillOpacity || 0.5));
     return {
       color: alertColor(event),
-      weight: event.includes('Tornado') ? 5 : 3,
+      weight: p._derivedZone ? 1.1 : (event.includes('Tornado') ? 2.4 : 1.6),
+      opacity: p._derivedZone ? 0.55 : 0.7,
       fillColor: alertColor(event),
-      fillOpacity: event.includes('Tornado') ? 0.22 : 0.14,
-      dashArray: event.includes('Watch') ? '8 5' : null
+      fillOpacity: countyFill ? opacity : Math.min(0.35, opacity),
+      dashArray: event.includes('Watch') ? '7 5' : null
     };
   },
   onEachFeature(feature, layer) {
     layer.on('click', event => {
       try { layer.bringToFront(); } catch {}
       const alerts = alertsAtLatLng(event.latlng);
-      map._lastPopupAlertList = alerts.length > 1 ? alerts : [alerts[0] || feature];
       const content = alerts.length > 1 ? buildAlertListPopup(alerts) : buildAlertPopup(alerts[0] || feature);
       L.popup({
         maxWidth: 540,
@@ -279,9 +291,21 @@ function alertKind(event = '') {
   return 'Statement';
 }
 function alertColor(event = '') {
+  event = String(event || '');
   if (event.includes('Tornado')) return '#ff00ff';
   if (event.includes('Severe Thunderstorm')) return '#facc15';
-  if (event.includes('Flash Flood')) return '#2563eb';
+  if (event.includes('Flash Flood')) return '#16a34a';
+  if (event.includes('Flood Warning')) return '#15803d';
+  if (event.includes('Flood Watch')) return '#22c55e';
+  if (event.includes('Flood Advisory')) return '#4ade80';
+  if (event.includes('Winter Storm')) return '#db2777';
+  if (event.includes('Winter Weather')) return '#a855f7';
+  if (event.includes('Snow Squall')) return '#38bdf8';
+  if (event.includes('High Wind')) return '#f97316';
+  if (event.includes('Wind Advisory')) return '#fb923c';
+  if (event.includes('Dense Fog')) return '#94a3b8';
+  if (event.includes('Heat')) return '#ef4444';
+  if (event.includes('Fire Weather') || event.includes('Red Flag')) return '#b91c1c';
   if (event.includes('Warning')) return '#dc2626';
   if (event.includes('Watch')) return '#ca8a04';
   if (event.includes('Advisory')) return '#9333ea';
@@ -450,41 +474,6 @@ function alertsAtLatLng(latlng) {
     .sort((a, b) => alertPriorityValue(b) - alertPriorityValue(a));
 }
 
-function alertPopupLocationTitle(alerts = []) {
-  const p = alerts.find(a => a?.properties?.areaDesc)?.properties || alerts[0]?.properties || {};
-  const area = String(p.areaDesc || '').split(/[;,]/).map(x => x.trim()).filter(Boolean)[0];
-  return area || state.label || 'Selected location';
-}
-
-function buildAlertListPopup(alerts = []) {
-  const list = alerts.map(alert => {
-    const p = alert.properties || {};
-    const id = canonicalAlertId(p);
-    return `<button class="popup-alert-choice ${alertClass(p.event || '')}" type="button" data-popup-alert-id="${safe(id)}">
-      <strong>${safe(p.event || 'Weather Alert')}</strong>
-      <span>${safe(p.headline || p.areaDesc || '')}</span>
-      <small>${safe(p.severity || '')} · ${safe(p.urgency || '')} · Until ${safe(formatAlertTime(p.expires || p.ends))}</small>
-    </button>`;
-  }).join('');
-  return `<div class="alert-popup-card alert-list-popup">
-    <div class="alert-popup-head">
-      <div><div class="popup-kicker">${safe(alertPopupLocationTitle(alerts))}</div><h3>${alerts.length} Active Alerts</h3></div>
-      <span class="popup-badge">Select</span>
-    </div>
-    <div class="popup-scroll-body popup-choice-list">${list}</div>
-  </div>`;
-}
-
-function alertDetailInfo(p = {}) {
-  const areas = p.areaDesc ? `<div class="popup-area"><strong>Areas:</strong> ${safe(p.areaDesc)}</div>` : '';
-  const headline = p.headline ? `<p class="popup-plainline">${safe(p.headline)}</p>` : '';
-  const rows = alertImpactRows(p).map(([k, v]) => `<div class="alert-row"><span>${safe(k)}</span><strong>${safe(v)}</strong></div>`).join('');
-  const instruction = alertInstruction(p);
-  const description = String(p.description || '').split(/\n+/).map(x => x.trim()).filter(Boolean).slice(0, 2).join(' ');
-  const shortText = instruction || description;
-  const shortLine = shortText ? `<p class="popup-plainline">${safe(shortText).slice(0, 520)}${shortText.length > 520 ? '…' : ''}</p>` : '';
-  return `${headline}${areas}${rows ? `<div class="alert-rows">${rows}</div>` : ''}${shortLine}`;
-}
 
 function firstParam(params = {}, keys = []) {
   for (const key of keys) {
@@ -870,6 +859,42 @@ function speakAlertById(id = '') {
   if (alert) speakAlert(alert, { requireToggle: false, id });
 }
 
+function alertPopupLocationTitle(alerts = []) {
+  const p = alerts.find(a => a?.properties?.areaDesc)?.properties || alerts[0]?.properties || {};
+  const area = String(p.areaDesc || '').split(/[;,]/).map(x => x.trim()).filter(Boolean)[0];
+  return area || state.label || 'Selected location';
+}
+
+function buildAlertListPopup(alerts = []) {
+  const list = alerts.map(alert => {
+    const p = alert.properties || {};
+    const id = canonicalAlertId(p);
+    return `<button class="popup-alert-choice ${alertClass(p.event || '')}" type="button" data-popup-alert-id="${safe(id)}">
+      <strong>${safe(p.event || 'Weather Alert')}</strong>
+      <span>${safe(p.headline || p.areaDesc || '')}</span>
+      <small>${safe(p.severity || '')} · ${safe(p.urgency || '')} · Until ${safe(formatAlertTime(p.expires || p.ends))}</small>
+    </button>`;
+  }).join('');
+  return `<div class="alert-popup-card alert-list-popup">
+    <div class="alert-popup-head">
+      <div><div class="popup-kicker">${safe(alertPopupLocationTitle(alerts))}</div><h3>${alerts.length} Active Alerts</h3></div>
+      <span class="popup-badge">Select</span>
+    </div>
+    <div class="popup-scroll-body popup-choice-list">${list}</div>
+  </div>`;
+}
+
+function alertDetailInfo(p = {}) {
+  const areas = p.areaDesc ? `<div class="popup-area"><strong>Areas:</strong> ${safe(p.areaDesc)}</div>` : '';
+  const headline = p.headline ? `<p class="popup-plainline">${safe(p.headline)}</p>` : '';
+  const rows = alertImpactRows(p).map(([k, v]) => `<div class="alert-row"><span>${safe(k)}</span><strong>${safe(v)}</strong></div>`).join('');
+  const instruction = alertInstruction(p);
+  const description = String(p.description || '').split(/\n+/).map(x => x.trim()).filter(Boolean).slice(0, 2).join(' ');
+  const shortText = instruction || description;
+  const shortLine = shortText ? `<p class="popup-plainline">${safe(shortText).slice(0, 520)}${shortText.length > 520 ? '…' : ''}</p>` : '';
+  return `${headline}${areas}${rows ? `<div class="alert-rows">${rows}</div>` : ''}${shortLine}`;
+}
+
 function buildAlertPopup(feature, options = {}) {
   const p = feature.properties || {};
   const event = p.event || 'Weather Alert';
@@ -880,19 +905,37 @@ function buildAlertPopup(feature, options = {}) {
   const backButton = options.back ? `<button class="popup-back-btn popup-back-link" type="button">Back to Alerts</button>` : '';
   return `
     <div class="alert-popup-card ${alertClass(event)}" data-popup-alert-id="${safe(alertKey)}">
-      <img class="alert-popup-image" src="${safe(alertImageUrl(event))}" alt="${safe(event)} image" onerror="this.onerror=null;this.src='/assets/weather-alerts/statement.png';">
       <div class="popup-scroll-body alert-detail-scroll">
         <div class="alert-detail-title">
           <div class="popup-kicker">${safe(alertOffice(p))}</div>
           <h3>${safe(event)}</h3>
           <div class="popup-times"><strong>Issued:</strong> ${safe(formatAlertTime(p.sent || p.effective))}${p.expires || p.ends ? ` · <strong>Until:</strong> ${safe(formatAlertTime(p.expires || p.ends))}` : ''}</div>
         </div>
+        <img class="alert-popup-image" src="${safe(alertImageUrl(event))}" alt="${safe(event)} image" onerror="this.onerror=null;this.src='/logo.png';">
         <div class="alert-detail-info">${alertDetailInfo(p)}</div>
         ${backButton}
         <div class="popup-footer">${fullLink}${listenButton}</div>
       </div>
     </div>
   `;
+}
+
+function flattenCoords(coords, out = []) {
+  if (!Array.isArray(coords)) return out;
+  if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+    out.push([coords[1], coords[0]]);
+    return out;
+  }
+  coords.forEach(c => flattenCoords(c, out));
+  return out;
+}
+
+function featureCenter(feature) {
+  const pts = flattenCoords(feature.geometry?.coordinates || []);
+  if (!pts.length) return null;
+  const lat = pts.reduce((sum, p) => sum + p[0], 0) / pts.length;
+  const lon = pts.reduce((sum, p) => sum + p[1], 0) / pts.length;
+  return [lat, lon];
 }
 
 function alertPopupLatLng(alert) {
@@ -917,24 +960,6 @@ function openAlertPopupForAlert(alert, options = {}) {
     autoPanPaddingTopLeft: [24, 96],
     autoPanPaddingBottomRight: [24, 24]
   }).setLatLng(latlng).setContent(content).openOn(map);
-}
-
-function flattenCoords(coords, out = []) {
-  if (!Array.isArray(coords)) return out;
-  if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
-    out.push([coords[1], coords[0]]);
-    return out;
-  }
-  coords.forEach(c => flattenCoords(c, out));
-  return out;
-}
-
-function featureCenter(feature) {
-  const pts = flattenCoords(feature.geometry?.coordinates || []);
-  if (!pts.length) return null;
-  const lat = pts.reduce((sum, p) => sum + p[0], 0) / pts.length;
-  const lon = pts.reduce((sum, p) => sum + p[1], 0) / pts.length;
-  return [lat, lon];
 }
 
 function destinationPoint(lat, lon, bearingDeg, distanceMiles) {
@@ -980,12 +1005,23 @@ function addStormMotionOverlay(feature) {
   stormMotionLayer.addLayer(arrow);
   stormMotionLayer.addLayer(label);
 }
+function isStormBasedWarningEvent(event = '') {
+  event = String(event || '');
+  return [
+    'Tornado Warning',
+    'Severe Thunderstorm Warning',
+    'Flash Flood Warning',
+    'Flood Warning',
+    'Snow Squall Warning',
+    'Special Marine Warning'
+  ].some(name => event.includes(name));
+}
+
 function hazardAllowed(event = '') {
-  const stormHazards = ['Tornado', 'Severe Thunderstorm', 'Flash Flood', 'Special Weather'];
-  const hazardMatch = [...state.enabledHazards].some(h => event.includes(h));
-  const isStormHazard = stormHazards.some(h => event.includes(h));
   const kindAllowed = state.enabledKinds.has(alertKind(event));
-  return kindAllowed && (!isStormHazard || hazardMatch);
+  if (!kindAllowed) return false;
+  if (state.hazardDisplayMode === 'all') return true;
+  return isStormBasedWarningEvent(event);
 }
 
 function soundEventForKey(event = '', soundKey = 'auto') {
@@ -1087,15 +1123,18 @@ function alertToneSequence(event = '', soundKey = 'auto', severity = '') {
 function soundAssetKeys(event = '', soundKey = 'auto', severity = '') {
   const normalized = soundEventForKey(event, soundKey);
   const sev = String(severity || '').toLowerCase();
-  if (soundKey === 'admin-green') return ['admin-green', 'administrative-green'];
-  if (soundKey === 'admin-red') return ['admin-red', 'administrative-red'];
-  if (normalized.includes('Tornado') || sev === 'extreme') return ['tornado', 'high', 'warning'];
-  if (normalized.includes('Flash Flood')) return ['flash-flood', 'warning'];
-  if (normalized.includes('Severe Thunderstorm')) return ['severe-thunderstorm', 'warning'];
-  if (normalized.includes('Warning')) return ['warning'];
-  if (normalized.includes('Watch')) return ['watch'];
-  if (normalized.includes('Advisory')) return ['advisory'];
-  return ['statement', 'alert'];
+  // Default custom files: /sounds/alert.wav for every weather alert and /sounds/admin.wav for admin messages.
+  // If those files are missing, HWOS falls back to the generated tone sequence below.
+  if (soundKey === 'admin-green') return ['admin', 'admin-green', 'administrative-green'];
+  if (soundKey === 'admin-red') return ['admin', 'admin-red', 'administrative-red'];
+  if (soundKey === 'auto') return ['alert'];
+  if (normalized.includes('Tornado') || sev === 'extreme') return ['alert', 'tornado', 'high', 'warning'];
+  if (normalized.includes('Flash Flood')) return ['alert', 'flash-flood', 'warning'];
+  if (normalized.includes('Severe Thunderstorm')) return ['alert', 'severe-thunderstorm', 'warning'];
+  if (normalized.includes('Warning')) return ['alert', 'warning'];
+  if (normalized.includes('Watch')) return ['alert', 'watch'];
+  if (normalized.includes('Advisory')) return ['alert', 'advisory'];
+  return ['alert', 'statement'];
 }
 
 function tryPlaySoundFile(keys = [], onFail = () => {}) {
@@ -1129,10 +1168,8 @@ function tryPlaySoundFile(keys = [], onFail = () => {}) {
 function playAlertSound(event = '', soundKey = 'auto', severity = '') {
   if (soundKey === 'silent') return;
   if (!$('soundToggle')?.checked) return;
-  const audio = new Audio('/sounds/alert.wav');
-  audio.volume = 1;
-  audio.preload = 'auto';
-  audio.play().catch(() => {});
+  const fallback = () => playToneSequence(alertToneSequence(event, soundKey, severity));
+  tryPlaySoundFile(soundAssetKeys(event, soundKey, severity), fallback);
 }
 
 function toastAlert(alert, force = false) {
@@ -1248,6 +1285,47 @@ function connectAdminAlertStream() {
   };
 }
 
+async function zoneGeometryForAlert(alert) {
+  const p = alert.properties || {};
+  const zones = Array.isArray(p.affectedZones) ? p.affectedZones : [];
+  const out = [];
+  for (const zoneUrl of zones.slice(0, 35)) {
+    if (!/api\.weather\.gov\/zones\/(county|forecast|fire)\//i.test(String(zoneUrl))) continue;
+    try {
+      if (!state.zoneGeometryCache.has(zoneUrl)) {
+        state.zoneGeometryCache.set(zoneUrl, api(`/api/nws-zone?url=${encodeURIComponent(zoneUrl)}`).catch(() => null));
+      }
+      const zone = await state.zoneGeometryCache.get(zoneUrl);
+      if (!zone?.geometry) continue;
+      out.push({
+        type: 'Feature',
+        geometry: zone.geometry,
+        properties: { ...p, _derivedZone: true, _zoneName: zone.name || zone.id || '' }
+      });
+    } catch {}
+  }
+  return out;
+}
+
+async function refreshAlertMapLayer(filteredAlerts = []) {
+  const token = ++state.alertLayerRenderToken;
+  alertLayer.clearLayers();
+  stormMotionLayer.clearLayers();
+  if (!$('alertsLayerToggle')?.checked) return;
+
+  const direct = filteredAlerts.filter(a => a.geometry);
+  const features = [...direct];
+  alertLayer.addData({ type: 'FeatureCollection', features });
+  if ($('stormMotionToggle')?.checked) direct.forEach(addStormMotionOverlay);
+
+  const missingGeometry = filteredAlerts.filter(a => !a.geometry && Array.isArray(a.properties?.affectedZones));
+  for (const alert of missingGeometry) {
+    const zoneFeatures = await zoneGeometryForAlert(alert);
+    if (token !== state.alertLayerRenderToken) return;
+    if (zoneFeatures.length) alertLayer.addData({ type: 'FeatureCollection', features: zoneFeatures });
+  }
+}
+
 function renderAlerts() {
   const filtered = state.alerts.filter(a => hazardAllowed(a.properties?.event || ''));
   $('alertMetric').textContent = String(filtered.length);
@@ -1264,18 +1342,12 @@ function renderAlerts() {
       ${grouped[kind].map(a => {
         const p = a.properties || {};
         const id = canonicalAlertId(p);
-        return `<div class="card alert-card ${alertClass(p.event)}" data-open-alert-id="${safe(id)}" role="button" tabindex="0"><div class="alert-card-head"><strong>${safe(p.event)}</strong><button class="listen-btn tts-alert-btn" type="button" data-speak-alert-id="${safe(id)}">▶ Listen</button></div><div>${safe(p.headline || '')}</div><div class="small">${safe(p.severity || '')} · ${safe(p.urgency || '')}</div></div>`;
+        return `<div class="card alert-card ${alertClass(p.event)}" role="button" tabindex="0" data-open-alert-id="${safe(id)}"><div class="alert-card-head"><strong>${safe(p.event)}</strong><button class="listen-btn tts-alert-btn" type="button" data-speak-alert-id="${safe(id)}">▶ Listen</button></div><div>${safe(p.headline || '')}</div><div class="small">${safe(p.severity || '')} · ${safe(p.urgency || '')}</div></div>`;
       }).join('')}
     </div>
   `).join('');
   alertsEl.innerHTML = `<div class="alert-scope">${safe(scope)}</div>` + (body || '<div class="card">No enabled active alerts for this location.</div>');
-  alertLayer.clearLayers();
-  stormMotionLayer.clearLayers();
-  if ($('alertsLayerToggle').checked) {
-    const mapped = filtered.filter(a => a.geometry);
-    alertLayer.addData({ type: 'FeatureCollection', features: mapped });
-    if ($('stormMotionToggle')?.checked) mapped.forEach(addStormMotionOverlay);
-  }
+  refreshAlertMapLayer(filtered);
 }
 
 function renderForecast(hourly = []) {
@@ -1533,6 +1605,66 @@ $('locateBtn').addEventListener('click', () => {
   }, err => setStatus(`Location error: ${err.message}`));
 });
 
+
+async function loadDiscordWebhookSettings() {
+  const status = $('discordWebhookStatus');
+  try {
+    const data = await api('/api/discord-webhook/config');
+    const cfg = data.config || {};
+    setCheckbox('discordWebhookEnabled', cfg.enabled);
+    if ($('discordWebhookMode')) $('discordWebhookMode').value = cfg.mode || 'selected';
+    if ($('discordWebhookFilter')) $('discordWebhookFilter').value = cfg.filter || '';
+    if ($('discordWebhookUrl')) $('discordWebhookUrl').placeholder = cfg.webhookConfigured ? cfg.webhookUrl : 'https://discord.com/api/webhooks/...';
+    document.querySelectorAll('.discord-kind').forEach(cb => { cb.checked = (cfg.alertKinds || ['Warning','Watch','Advisory','Statement']).includes(cb.value); });
+    if (status) status.textContent = cfg.webhookConfigured ? 'Webhook configured. Leave the webhook link blank to keep the saved link.' : 'No webhook link saved.';
+  } catch (err) {
+    if (status) status.textContent = `Discord webhook settings unavailable: ${err.message}`;
+  }
+}
+
+async function postJson(path, body) {
+  const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || json.message || res.statusText);
+  return json;
+}
+
+async function saveDiscordWebhookSettings() {
+  const status = $('discordWebhookStatus');
+  try {
+    const mode = $('discordWebhookMode')?.value || 'selected';
+    const filter = $('discordWebhookFilter')?.value || '';
+    const payload = {
+      enabled: $('discordWebhookEnabled')?.checked || false,
+      webhookUrl: $('discordWebhookUrl')?.value || '',
+      mode,
+      filter,
+      selectedLocation: { lat: state.lat, lon: state.lon, label: state.label },
+      alertKinds: [...document.querySelectorAll('.discord-kind:checked')].map(cb => cb.value),
+      includeAdminMessages: true,
+      quietFirstRun: true
+    };
+    if (String(filter).trim().toLowerCase() === 'spotter') payload.mode = 'spotter';
+    const data = await postJson('/api/discord-webhook/config', payload);
+    if ($('discordWebhookUrl')) $('discordWebhookUrl').value = '';
+    if (status) status.textContent = data.config?.enabled ? `Saved. Monitoring ${data.config.mode === 'selected' ? state.label : data.config.mode}. Existing active alerts were baselined; only new alerts will post.` : 'Saved. Discord webhook disabled.';
+    await loadDiscordWebhookSettings();
+  } catch (err) {
+    if (status) status.textContent = `Save failed: ${err.message}`;
+  }
+}
+
+async function testDiscordWebhook() {
+  const status = $('discordWebhookStatus');
+  try {
+    if (status) status.textContent = 'Sending test Discord message...';
+    await postJson('/api/discord-webhook/test', {});
+    if (status) status.textContent = 'Test message sent to Discord.';
+  } catch (err) {
+    if (status) status.textContent = `Test failed: ${err.message}`;
+  }
+}
+
 document.addEventListener('click', event => {
   const choice = event.target.closest?.('.popup-alert-choice');
   if (choice) {
@@ -1589,7 +1721,41 @@ $('popupToggle')?.addEventListener('change', e => savePreferences({ popupEnabled
 $('ttsModeSelect')?.addEventListener('change', e => { state.ttsMode = e.target.value; savePreferences({ ttsMode: state.ttsMode }); });
 $('ttsVoiceSelect')?.addEventListener('change', e => { state.ttsVoiceURI = e.target.value; savePreferences({ ttsVoiceURI: state.ttsVoiceURI }); });
 
-$('settingsBtn').addEventListener('click', () => $('settingsDrawer').classList.add('open'));
+$('saveDiscordWebhook')?.addEventListener('click', saveDiscordWebhookSettings);
+$('testDiscordWebhook')?.addEventListener('click', testDiscordWebhook);
+$('discordWebhookMode')?.addEventListener('change', e => {
+  if (e.target.value === 'spotter' && $('discordWebhookFilter')) $('discordWebhookFilter').value = 'spotter';
+});
+loadDiscordWebhookSettings();
+
+
+function syncChromeLayoutMetrics() {
+  const root = document.documentElement;
+  const topbar = document.querySelector('.topbar');
+  const left = document.querySelector('.left-console');
+  const info = document.querySelector('.info-panel');
+  if (!root || !topbar) return;
+
+  const isStacked = window.matchMedia?.('(max-width: 1250px), (max-height: 720px)').matches;
+  if (isStacked) {
+    root.style.removeProperty('--hwos-panel-top');
+    root.style.removeProperty('--hwos-console-width');
+    root.style.removeProperty('--hwos-info-width');
+    return;
+  }
+
+  const topbarRect = topbar.getBoundingClientRect();
+  const nextTop = Math.ceil(topbarRect.bottom + 18);
+  root.style.setProperty('--hwos-panel-top', `${nextTop}px`);
+  root.style.setProperty('--hwos-console-width', `${Math.ceil(left?.getBoundingClientRect().width || 252)}px`);
+  root.style.setProperty('--hwos-info-width', `${Math.ceil(info?.getBoundingClientRect().width || 340)}px`);
+}
+
+window.addEventListener('resize', () => requestAnimationFrame(syncChromeLayoutMetrics));
+window.addEventListener('orientationchange', () => setTimeout(syncChromeLayoutMetrics, 100));
+if (document.fonts?.ready) document.fonts.ready.then(syncChromeLayoutMetrics).catch(() => {});
+
+$('settingsBtn').addEventListener('click', () => { syncChromeLayoutMetrics(); $('settingsDrawer').classList.add('open'); });
 $('closeSettings').addEventListener('click', () => $('settingsDrawer').classList.remove('open'));
 $('resetPreferencesBtn')?.addEventListener('click', () => { localStorage.removeItem(PREFS_KEY); location.reload(); });
 $('themeSelect').addEventListener('change', e => setBasemap(e.target.value));
@@ -1600,6 +1766,7 @@ $('displayModeSelect')?.addEventListener('change', e => applyColorScheme(e.targe
 window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change', () => { if (state.colorScheme === 'auto') applyColorScheme('auto'); });
 $('radarToggle').addEventListener('change', e => { saveLayerPreference('radar', e.target.checked); if (e.target.checked) updateRadarImage(); else if (radarLayer) map.removeLayer(radarLayer); });
 $('radarOpacity').addEventListener('input', e => { state.radarOpacity = Number(e.target.value) / 100; savePreferences({ radarOpacity: Number(e.target.value) }); if (radarLayer) radarLayer.setOpacity(state.radarOpacity); });
+$('alertFillOpacity')?.addEventListener('input', e => { state.alertFillOpacity = Number(e.target.value) / 100; savePreferences({ alertFillOpacity: Number(e.target.value) }); renderAlerts(); });
 $('alertsLayerToggle').addEventListener('change', e => { saveLayerPreference('alerts', e.target.checked); renderAlerts(); });
 $('stormMotionToggle')?.addEventListener('change', e => { saveLayerPreference('stormMotion', e.target.checked); renderAlerts(); });
 $('spotterModeToggle')?.addEventListener('change', async e => {
@@ -1618,6 +1785,12 @@ $('countiesToggle').addEventListener('change', e => { saveLayerPreference('count
 document.querySelectorAll('.hazard-toggle').forEach(cb => cb.addEventListener('change', () => {
   state.enabledHazards = new Set([...document.querySelectorAll('.hazard-toggle:checked')].map(x => x.value));
   savePreferences({ hazards: [...state.enabledHazards] });
+  renderAlerts();
+}));
+document.querySelectorAll('.hazard-mode').forEach(rb => rb.addEventListener('change', () => {
+  const selected = document.querySelector('.hazard-mode:checked')?.value || 'storm';
+  state.hazardDisplayMode = selected;
+  savePreferences({ hazardDisplayMode: selected });
   renderAlerts();
 }));
 document.querySelectorAll('.alert-toggle').forEach(cb => cb.addEventListener('change', () => {
@@ -1656,6 +1829,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click
 
 async function init() {
   applySavedControls();
+  syncChromeLayoutMetrics();
   setBasemap(prefs.theme || 'standard', { skipSave: true });
   if ($('themeSelect')) $('themeSelect').value = prefs.theme || 'standard';
   if ($('displayModeSelect')) $('displayModeSelect').value = state.colorScheme;
@@ -1673,6 +1847,8 @@ async function init() {
     .then(loc => loadWeather(loc.lat, loc.lon, loc.label, loc.geojson, { fitBoundary: false, center: false, skipLocationSave: true, notify: false, resetAlertBaseline: true }))
     .catch(() => loadWeather(Number(startupLocation.lat) || DEFAULT_LOCATION.lat, Number(startupLocation.lon) || DEFAULT_LOCATION.lon, startupLabel, null, { skipLocationSave: true, notify: false, resetAlertBaseline: true }));
 
+  syncChromeLayoutMetrics();
+  setTimeout(syncChromeLayoutMetrics, 250);
   setInterval(() => { refreshRadar().catch(() => {}); }, 300000);
   setInterval(() => loadWeather(state.lat, state.lon, state.label, state.lastGeojson, { fitBoundary: false, center: false }).catch(err => setStatus(`Refresh error: ${err.message}`)), 180000);
   setInterval(() => { if (state.spotterMode) loadSpotterAlerts({ setStatus: false }).catch(() => {}); }, 90000);
@@ -1680,13 +1856,20 @@ async function init() {
 
 init();
 
-
-function updateHeaderLogoForViewport() {
-  const img = document.getElementById('headerLogo') || document.querySelector('.logo-slot img');
-  if (!img) return;
-  const narrow = window.innerWidth <= 900;
-  const desired = narrow ? '/tablogo.png' : '/logo.png';
-  if (!img.getAttribute('src')?.endsWith(desired.replace('/', ''))) img.src = desired;
-}
-window.addEventListener('resize', updateHeaderLogoForViewport);
-updateHeaderLogoForViewport();
+// 2026-06-29 bottom summary panel sync: copy existing dashboard values without changing data flow.
+(function syncBottomInfoBar(){
+  function text(id){ return document.getElementById(id)?.textContent?.trim() || '—'; }
+  function set(id, value){ const el = document.getElementById(id); if (el) el.textContent = value || '—'; }
+  function sync(){
+    set('bottomPlaceName', text('placeName'));
+    set('bottomOfficeMetric', text('officeMetric'));
+    set('bottomAlertMetric', text('alertMetric'));
+    set('bottomRadarTime', text('radarTimeLabel'));
+  }
+  const ids = ['placeName','officeMetric','alertMetric','radarTimeLabel'];
+  const mo = new MutationObserver(sync);
+  ids.forEach(id => { const el = document.getElementById(id); if (el) mo.observe(el, { childList:true, characterData:true, subtree:true }); });
+  window.addEventListener('load', sync);
+  document.addEventListener('DOMContentLoaded', sync);
+  setInterval(sync, 5000);
+})();

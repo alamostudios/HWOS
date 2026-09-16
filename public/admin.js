@@ -123,8 +123,7 @@ for (const type of TYPES.filter(t => t !== 'Custom Message')) {
         description: `This is a simulated ${type} sent from the HWOS admin console.`,
         severity: defaultSeverity(type),
         urgency: type.includes('Warning') ? 'Immediate' : 'Expected',
-        soundKey: 'auto',
-        targetRegion: $('targetRegion')?.value || 'all'
+        soundKey: 'auto'
       };
       const json = await send(payload);
       result.textContent = `Sent ${type} to ${json.clients} connected client(s).`;
@@ -236,8 +235,7 @@ $('alertForm').addEventListener('submit', async (e) => {
       soundKey: isAdmin ? `admin-${adminSeverity}` : $('soundKey').value,
       adminMessage: isAdmin,
       adminSeverity,
-      expires: isAdmin ? $('adminExpires').value : undefined,
-      targetRegion: $('targetRegion')?.value || 'all'
+      expires: isAdmin ? $('adminExpires').value : undefined
     };
     const json = await send(payload);
     result.textContent = `Sent ${payload.event} to ${json.clients} connected client(s).`;
